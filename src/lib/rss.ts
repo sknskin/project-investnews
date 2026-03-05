@@ -3,8 +3,8 @@ import { FEEDS } from "./feeds";
 import { Category, NewsItem } from "@/types";
 
 const parser = new Parser({
-  timeout: 10000,
-  maxRedirects: 3,
+  timeout: 5000,
+  maxRedirects: 2,
   headers: {
     "User-Agent":
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
@@ -155,7 +155,7 @@ export async function fetchNewsByCategory(
   const categoryFeeds = FEEDS.filter((f) => f.category === category);
 
   // 피드를 배치로 나눠서 동시 요청 수 제한 (서버 과부하 방지)
-  const BATCH_SIZE = 8;
+  const BATCH_SIZE = 5;
   const allItems: NewsItem[] = [];
 
   for (let i = 0; i < categoryFeeds.length; i += BATCH_SIZE) {

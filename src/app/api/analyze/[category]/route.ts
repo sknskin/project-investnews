@@ -3,6 +3,8 @@ import { fetchNewsByCategory } from "@/lib/rss";
 import { analyzeNews } from "@/lib/ai";
 import { Category } from "@/types";
 
+export const maxDuration = 60;
+
 const VALID_CATEGORIES: Category[] = [
   "economy",
   "politics",
@@ -35,7 +37,7 @@ export async function GET(
   }
 
   try {
-    const items = await fetchNewsByCategory(category as Category, 20);
+    const items = await fetchNewsByCategory(category as Category, 15);
 
     if (items.length === 0) {
       return NextResponse.json(
@@ -53,6 +55,7 @@ export async function GET(
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Analysis failed";
+    console.error(`[Analyze API] ${category} error:`, message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

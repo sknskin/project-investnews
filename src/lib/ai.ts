@@ -67,7 +67,7 @@ async function tryGroq(prompt: string): Promise<string> {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) throw new Error("NO_KEY");
 
-  const groq = new Groq({ apiKey });
+  const groq = new Groq({ apiKey, timeout: 30000 });
   const res = await groq.chat.completions.create({
     model: "llama-3.3-70b-versatile",
     messages: [
@@ -91,11 +91,14 @@ async function tryGemini(prompt: string): Promise<string> {
   if (!apiKey) throw new Error("NO_KEY");
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const models = ["gemini-1.5-flash", "gemini-2.0-flash-lite", "gemini-2.0-flash"];
+  const models = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-flash"];
 
   for (const modelName of models) {
     try {
-      const model = genAI.getGenerativeModel({ model: modelName });
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        generationConfig: { maxOutputTokens: 4000 },
+      });
       const result = await model.generateContent(prompt);
       return result.response.text();
     } catch (error) {
