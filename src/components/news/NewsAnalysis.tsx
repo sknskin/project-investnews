@@ -9,7 +9,7 @@ function AnalysisContent({ text }: { text: string }) {
   let lineKey = 0;
 
   return (
-    <div className="space-y-1.5 text-[15px] leading-relaxed">
+    <div className="space-y-1.5 text-[13px] sm:text-[15px] leading-relaxed">
       {lines.map((line) => {
         const trimmed = line.trim();
         if (!trimmed) return null;
@@ -116,7 +116,7 @@ export default function NewsAnalysis({ category }: { category: Category }) {
 
       {/* Loading */}
       {loading && (
-        <div className="rounded-xl border border-blue-500/15 bg-blue-500/5 p-5 animate-fade-in-up">
+        <div className="rounded-xl border border-blue-500/15 bg-blue-500/5 p-3 sm:p-5 animate-fade-in-up">
           <div className="flex items-center gap-3">
             <div className="relative">
               <div className="w-8 h-8 rounded-full border-2 border-blue-500/20 border-t-blue-400 animate-spin" />
@@ -156,7 +156,7 @@ export default function NewsAnalysis({ category }: { category: Category }) {
 
       {/* Result */}
       {analysis && (
-        <div className="rounded-xl border border-blue-500/15 bg-gradient-to-b from-blue-500/5 to-transparent p-5 animate-fade-in-up">
+        <div className="rounded-xl border border-blue-500/15 bg-gradient-to-b from-blue-500/5 to-transparent p-3 sm:p-5 animate-fade-in-up">
           {/* Header */}
           <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/30">
             <div className="flex items-center gap-2">

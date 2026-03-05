@@ -15,7 +15,7 @@ export function NewsCardSkeleton() {
 
 export function NewsGridSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
       {Array.from({ length: count }).map((_, i) => (
         <NewsCardSkeleton key={i} />
       ))}

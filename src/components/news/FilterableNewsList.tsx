@@ -40,7 +40,7 @@ export default function FilterableNewsList({ items }: { items: NewsItem[] }) {
           <button
             key={source}
             onClick={() => setActiveSource(source)}
-            className={`px-3 py-1 text-[12px] rounded-full whitespace-nowrap transition-all duration-200 ${
+            className={`px-2.5 sm:px-3 py-1 text-[11px] sm:text-[12px] rounded-full whitespace-nowrap transition-all duration-200 ${
               activeSource === source
                 ? "bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/25 font-medium"
                 : "text-muted-foreground/60 hover:text-muted-foreground hover:bg-white/5"
@@ -57,7 +57,7 @@ export default function FilterableNewsList({ items }: { items: NewsItem[] }) {
       </div>
 
       {/* Count */}
-      <div className="text-[11px] text-muted-foreground/40 mb-3">
+      <div className="text-[10px] sm:text-[11px] text-muted-foreground/40 mb-3">
         {filtered.length}건 표시
       </div>
 

@@ -20,7 +20,7 @@ export default async function EconomyPage() {
           <span className="text-2xl">💰</span>
           <h1 className="text-2xl font-bold tracking-tight">{CATEGORY_LABELS.economy}</h1>
         </div>
-        <div className="flex items-center gap-3 pl-10">
+        <div className="flex items-center gap-3 pl-0 sm:pl-10">
           <p className="text-sm text-muted-foreground/50">{items.length}건의 뉴스</p>
           <LastUpdated />
         </div>

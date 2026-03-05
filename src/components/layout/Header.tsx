@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { CATEGORY_LABELS } from "@/types";
 
@@ -27,12 +27,45 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [spinning, setSpinning] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [updatedTime, setUpdatedTime] = useState("--:--");
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const updateTime = () =>
+    setUpdatedTime(
+      new Date().toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    );
+
+  useEffect(() => {
+    updateTime();
+  }, []);
 
   const handleRefresh = () => {
     setSpinning(true);
     router.refresh();
+    updateTime();
     setTimeout(() => setSpinning(false), 1000);
   };
+
+  // Close menu on route change
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  // Close menu on outside click
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [menuOpen]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/40 bg-background/60 backdrop-blur-xl">
@@ -48,53 +81,104 @@ export default function Header() {
             </span>
           </Link>
 
-          {/* Navigation with fade edges */}
-          <div className="relative flex-1 min-w-0">
-            <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-background/60 to-transparent z-10 pointer-events-none sm:hidden" />
-            <nav className="flex gap-1 overflow-x-auto scrollbar-hide">
-              {NAV_ITEMS.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 text-[12px] sm:text-[13px] rounded-full whitespace-nowrap transition-all duration-200",
-                      isActive
-                        ? "bg-gradient-to-r from-blue-500/20 to-violet-500/20 text-blue-300 font-semibold ring-1 ring-blue-500/30"
-                        : "text-muted-foreground hover:text-foreground hover:bg-white/5"
-                    )}
-                  >
-                    <span className="text-sm">{CATEGORY_ICONS[item.href]}</span>
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </nav>
-            <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-background/60 to-transparent z-10 pointer-events-none sm:hidden" />
-          </div>
+          {/* Desktop Navigation */}
+          <nav className="hidden sm:flex gap-1 flex-1 min-w-0">
+            {NAV_ITEMS.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3.5 py-1.5 text-[13px] rounded-full whitespace-nowrap transition-all duration-200",
+                    isActive
+                      ? "bg-gradient-to-r from-blue-500/20 to-violet-500/20 text-blue-300 font-semibold ring-1 ring-blue-500/30"
+                      : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                  )}
+                >
+                  <span className="text-sm">{CATEGORY_ICONS[item.href]}</span>
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
 
-          {/* Tagline */}
+          {/* Mobile spacer */}
+          <div className="flex-1 sm:hidden" />
+
+          {/* Tagline (desktop) */}
           <div className="text-[11px] text-muted-foreground/60 hidden lg:block shrink-0">
             실시간 투자 뉴스 · 1분 갱신
           </div>
 
-          {/* Refresh */}
-          <button
-            onClick={handleRefresh}
-            className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-foreground hover:bg-white/5 transition-colors"
-            title="새로고침"
-          >
-            <svg
-              className={`w-4 h-4 transition-transform duration-700 ${spinning ? "animate-spin" : ""}`}
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
+          {/* Updated time + Refresh */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span
+              className="text-[10px] sm:text-[11px] text-muted-foreground/40 flex items-center gap-1"
+              suppressHydrationWarning
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182" />
-            </svg>
-          </button>
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500/60 animate-pulse" />
+              {updatedTime}
+            </span>
+            <button
+              onClick={handleRefresh}
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-foreground hover:bg-white/5 transition-colors"
+              title="새로고침"
+            >
+              <svg
+                className={`w-4 h-4 transition-transform duration-700 ${spinning ? "animate-spin" : ""}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Hamburger (mobile only) */}
+          <div className="sm:hidden relative" ref={menuRef}>
+            <button
+              onClick={() => setMenuOpen((v) => !v)}
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-foreground hover:bg-white/5 transition-colors"
+              aria-label="메뉴"
+            >
+              {menuOpen ? (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+              )}
+            </button>
+
+            {/* Dropdown menu */}
+            {menuOpen && (
+              <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-border/40 bg-background/95 backdrop-blur-xl shadow-xl shadow-black/30 py-2 animate-fade-in-up">
+                {NAV_ITEMS.map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "flex items-center gap-2.5 px-4 py-2.5 text-sm transition-colors",
+                        isActive
+                          ? "text-blue-300 bg-blue-500/10 font-semibold"
+                          : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                      )}
+                    >
+                      <span>{CATEGORY_ICONS[item.href]}</span>
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>

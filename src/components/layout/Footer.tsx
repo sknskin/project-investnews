@@ -11,7 +11,7 @@ export default function Footer() {
               InvestNews
             </span>
           </div>
-          <div className="text-[11px] text-muted-foreground/50 text-center">
+          <div className="text-[10px] sm:text-[11px] text-muted-foreground/50 text-center">
             RSS 피드 기반 · 1분마다 자동 갱신 · AI 뉴스 분석 · 비용 0원
           </div>
         </div>
