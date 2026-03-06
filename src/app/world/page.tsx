@@ -25,7 +25,7 @@ export default async function WorldPage() {
           <LastUpdated />
         </div>
       </div>
-      <NewsAnalysis category="world" />
+      <NewsAnalysis category="world" items={items} />
       <FilterableNewsList items={items} />
     </div>
   );

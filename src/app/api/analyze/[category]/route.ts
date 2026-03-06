@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { fetchNewsByCategory } from "@/lib/rss";
-import { analyzeNews } from "@/lib/ai";
+import { analyzeHeadlines } from "@/lib/ai";
 import { Category } from "@/types";
 
 export const maxDuration = 60;
@@ -20,8 +19,8 @@ const analysisCache = new Map<
 >();
 const CACHE_TTL = 10 * 60 * 1000; // 10분
 
-export async function GET(
-  _request: Request,
+export async function POST(
+  request: Request,
   { params }: { params: Promise<{ category: string }> }
 ) {
   const { category } = await params;
@@ -37,16 +36,17 @@ export async function GET(
   }
 
   try {
-    const items = await fetchNewsByCategory(category as Category, 15);
+    const body = await request.json();
+    const headlines: { title: string; source: string; snippet?: string }[] = body.headlines;
 
-    if (items.length === 0) {
+    if (!headlines || headlines.length === 0) {
       return NextResponse.json(
-        { error: "No news items available for analysis" },
-        { status: 404 }
+        { error: "No headlines provided" },
+        { status: 400 }
       );
     }
 
-    const analysis = await analyzeNews(items, category as Category);
+    const analysis = await analyzeHeadlines(headlines, category as Category);
 
     // Store in cache
     analysisCache.set(category, { result: analysis, timestamp: Date.now() });
@@ -55,16 +55,7 @@ export async function GET(
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Analysis failed";
-    const stack = error instanceof Error ? error.stack : undefined;
-    console.error(`[Analyze API] ${category} error:`, message, stack);
-    return NextResponse.json({
-      error: message,
-      debug: {
-        hasGroqKey: !!process.env.GROQ_API_KEY,
-        hasGeminiKey: !!process.env.GEMINI_API_KEY,
-        groqKeyPrefix: process.env.GROQ_API_KEY?.slice(0, 8),
-        geminiKeyPrefix: process.env.GEMINI_API_KEY?.slice(0, 8),
-      },
-    }, { status: 500 });
+    console.error(`[Analyze API] ${category} error:`, message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

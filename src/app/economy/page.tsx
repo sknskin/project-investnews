@@ -25,7 +25,7 @@ export default async function EconomyPage() {
           <LastUpdated />
         </div>
       </div>
-      <NewsAnalysis category="economy" />
+      <NewsAnalysis category="economy" items={items} />
       <FilterableNewsList items={items} />
     </div>
   );

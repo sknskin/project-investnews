@@ -25,7 +25,7 @@ export default async function PoliticsPage() {
           <LastUpdated />
         </div>
       </div>
-      <NewsAnalysis category="politics" />
+      <NewsAnalysis category="politics" items={items} />
       <FilterableNewsList items={items} />
     </div>
   );

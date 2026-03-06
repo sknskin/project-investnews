@@ -113,10 +113,18 @@ async function tryGemini(prompt: string): Promise<string> {
   throw new Error("Gemini quota exceeded");
 }
 
-export async function analyzeNews(
-  items: NewsItem[],
+export async function analyzeHeadlines(
+  headlines: { title: string; source: string; snippet?: string }[],
   category: Category
 ): Promise<string> {
+  const items = headlines.map((h) => ({
+    title: h.title,
+    source: h.source,
+    snippet: h.snippet || "",
+    link: "",
+    pubDate: "",
+    category,
+  })) as NewsItem[];
   const prompt = buildPrompt(items, category);
 
   const providers: { name: string; fn: () => Promise<string> }[] = [];

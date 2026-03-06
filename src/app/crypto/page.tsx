@@ -25,7 +25,7 @@ export default async function CryptoPage() {
           <LastUpdated />
         </div>
       </div>
-      <NewsAnalysis category="crypto" />
+      <NewsAnalysis category="crypto" items={items} />
       <FilterableNewsList items={items} />
     </div>
   );

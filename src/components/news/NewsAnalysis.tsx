@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Category } from "@/types";
+import { Category, NewsItem } from "@/types";
 
 function AnalysisContent({ text }: { text: string }) {
   const lines = text.split("\n");
@@ -73,7 +73,7 @@ function AnalysisContent({ text }: { text: string }) {
   );
 }
 
-export default function NewsAnalysis({ category }: { category: Category }) {
+export default function NewsAnalysis({ category, items }: { category: Category; items: NewsItem[] }) {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,7 +83,16 @@ export default function NewsAnalysis({ category }: { category: Category }) {
     setError(null);
 
     try {
-      const res = await fetch(`/api/analyze/${category}`);
+      const headlines = items.slice(0, 15).map((item) => ({
+        title: item.title,
+        source: item.source,
+        snippet: item.snippet,
+      }));
+      const res = await fetch(`/api/analyze/${category}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ headlines }),
+      });
       const data = await res.json();
 
       if (!res.ok) {

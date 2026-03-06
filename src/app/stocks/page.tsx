@@ -25,7 +25,7 @@ export default async function StocksPage() {
           <LastUpdated />
         </div>
       </div>
-      <NewsAnalysis category="stocks" />
+      <NewsAnalysis category="stocks" items={items} />
       <FilterableNewsList items={items} />
     </div>
   );
