@@ -1,5 +1,4 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import Groq from "groq-sdk";
 import { NewsItem, Category } from "@/types";
 
 const CATEGORY_CONTEXT: Record<Category, string> = {
@@ -67,23 +66,43 @@ async function tryGroq(prompt: string): Promise<string> {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) throw new Error("NO_KEY");
 
-  const groq = new Groq({ apiKey, timeout: 30000 });
-  const res = await groq.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-    messages: [
-      {
-        role: "system",
-        content: "당신은 골드만삭스 수석 투자 전략가입니다. 항상 구체적인 자산명, 섹터, 종목군을 언급하며, 투자자가 즉시 행동할 수 있는 수준의 상세한 분석을 제공합니다. 절대 간략하게 쓰지 마세요. 각 섹션을 충분히 상세하게 작성하세요.",
-      },
-      { role: "user", content: prompt },
-    ],
-    temperature: 0.5,
-    max_tokens: 4000,
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
 
-  const text = res.choices[0]?.message?.content;
-  if (!text) throw new Error("Empty response from Groq");
-  return text;
+  try {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          {
+            role: "system",
+            content: "당신은 골드만삭스 수석 투자 전략가입니다. 항상 구체적인 자산명, 섹터, 종목군을 언급하며, 투자자가 즉시 행동할 수 있는 수준의 상세한 분석을 제공합니다. 절대 간략하게 쓰지 마세요. 각 섹션을 충분히 상세하게 작성하세요.",
+          },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.5,
+        max_tokens: 4000,
+      }),
+      signal: controller.signal,
+    });
+
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`Groq API ${res.status}: ${body.slice(0, 200)}`);
+    }
+
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content;
+    if (!text) throw new Error("Empty response from Groq");
+    return text;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function tryGemini(prompt: string): Promise<string> {
