@@ -137,7 +137,8 @@ export async function analyzeNews(
       return await provider.fn();
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
-      console.warn(`[AI] ${provider.name} failed: ${msg}`);
+      const stack = error instanceof Error ? error.stack : undefined;
+      console.error(`[AI] ${provider.name} failed: ${msg}`, stack);
     }
   }
 

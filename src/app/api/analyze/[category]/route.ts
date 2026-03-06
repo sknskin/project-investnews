@@ -55,7 +55,16 @@ export async function GET(
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Analysis failed";
-    console.error(`[Analyze API] ${category} error:`, message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const stack = error instanceof Error ? error.stack : undefined;
+    console.error(`[Analyze API] ${category} error:`, message, stack);
+    return NextResponse.json({
+      error: message,
+      debug: {
+        hasGroqKey: !!process.env.GROQ_API_KEY,
+        hasGeminiKey: !!process.env.GEMINI_API_KEY,
+        groqKeyPrefix: process.env.GROQ_API_KEY?.slice(0, 8),
+        geminiKeyPrefix: process.env.GEMINI_API_KEY?.slice(0, 8),
+      },
+    }, { status: 500 });
   }
 }
