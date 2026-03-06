@@ -140,15 +140,16 @@ export async function analyzeHeadlines(
     throw new Error("AI API 키가 설정되지 않았습니다. GROQ_API_KEY 또는 GEMINI_API_KEY를 .env.local에 추가해주세요.");
   }
 
+  const errors: string[] = [];
   for (const provider of providers) {
     try {
       return await provider.fn();
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
-      const stack = error instanceof Error ? error.stack : undefined;
-      console.error(`[AI] ${provider.name} failed: ${msg}`, stack);
+      console.error(`[AI] ${provider.name} failed: ${msg}`);
+      errors.push(`${provider.name}: ${msg}`);
     }
   }
 
-  throw new Error("AI 분석에 실패했습니다. 잠시 후 다시 시도해주세요.");
+  throw new Error(`AI 분석 실패 — ${errors.join(" | ")}`);
 }
