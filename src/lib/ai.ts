@@ -170,5 +170,6 @@ export async function analyzeHeadlines(
     }
   }
 
-  throw new Error(`AI 분석 실패 — ${errors.join(" | ")}`);
+  console.error("[AI] All providers failed:", errors.join(" | "));
+  throw new Error("AI 분석에 실패했습니다. 잠시 후 다시 시도해주세요.");
 }
