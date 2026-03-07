@@ -1,6 +1,7 @@
 import { fetchMarketIndices, getGroupedIndices, getOrderedGroups, getGroupIcon } from "@/lib/market";
 import type { MarketIndex } from "@/lib/market";
 import { cn } from "@/lib/utils";
+import MarketAnalysis from "@/components/market/MarketAnalysis";
 
 export const revalidate = 60;
 
@@ -94,6 +95,8 @@ export default async function SummaryPage() {
           주요 시장 지수 · 실시간 업데이트
         </p>
       </div>
+
+      {indices.length > 0 && <MarketAnalysis indices={indices} />}
 
       {indices.length === 0 ? (
         <div className="text-center py-20">
