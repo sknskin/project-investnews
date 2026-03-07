@@ -8,6 +8,7 @@ import { CATEGORY_LABELS } from "@/types";
 
 const CATEGORY_ICONS: Record<string, string> = {
   "/": "🏠",
+  "/summary": "📋",
   "/economy": "💰",
   "/politics": "🏛️",
   "/world": "🌍",
@@ -17,6 +18,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 const NAV_ITEMS = [
   { href: "/", label: "전체" },
+  { href: "/summary", label: "요약" },
   ...Object.entries(CATEGORY_LABELS).map(([key, label]) => ({
     href: `/${key}`,
     label,
