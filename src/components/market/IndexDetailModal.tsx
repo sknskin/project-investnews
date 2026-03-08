@@ -139,10 +139,13 @@ export default function IndexDetailModal({ idx, onClose }: IndexDetailModalProps
       if (e.key === "Escape") onClose();
     };
     document.addEventListener("keydown", handleKey);
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = "hidden";
+    document.body.style.paddingRight = `${scrollbarWidth}px`;
     return () => {
       document.removeEventListener("keydown", handleKey);
       document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
     };
   }, [idx, onClose]);
 
