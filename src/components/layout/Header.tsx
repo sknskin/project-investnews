@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { CATEGORY_LABELS } from "@/types";
+import ThemeToggle from "./ThemeToggle";
 
 const CATEGORY_ICONS: Record<string, string> = {
   "/": "🏠",
@@ -83,6 +84,9 @@ export default function Header() {
             </span>
           </Link>
 
+          {/* Theme Toggle */}
+          <ThemeToggle />
+
           {/* Desktop Navigation */}
           <nav className="hidden sm:flex gap-1 flex-1 min-w-0">
             {NAV_ITEMS.map((item) => {
@@ -94,8 +98,8 @@ export default function Header() {
                   className={cn(
                     "flex items-center gap-1.5 px-3.5 py-1.5 text-[13px] rounded-full whitespace-nowrap transition-all duration-200",
                     isActive
-                      ? "bg-gradient-to-r from-blue-500/20 to-violet-500/20 text-blue-300 font-semibold ring-1 ring-blue-500/30"
-                      : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                      ? "bg-gradient-to-r from-blue-500/15 to-violet-500/15 text-blue-600 dark:text-blue-300 font-semibold ring-1 ring-blue-500/25 dark:ring-blue-500/30"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
                   )}
                 >
                   <span className="text-sm">{CATEGORY_ICONS[item.href]}</span>
@@ -124,7 +128,7 @@ export default function Header() {
             </span>
             <button
               onClick={handleRefresh}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-foreground hover:bg-white/5 transition-colors"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-foreground hover:bg-accent transition-colors"
               title="새로고침"
             >
               <svg
@@ -143,7 +147,7 @@ export default function Header() {
           <div className="sm:hidden relative" ref={menuRef}>
             <button
               onClick={() => setMenuOpen((v) => !v)}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-foreground hover:bg-white/5 transition-colors"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-foreground hover:bg-accent transition-colors"
               aria-label="메뉴"
             >
               {menuOpen ? (
@@ -169,8 +173,8 @@ export default function Header() {
                       className={cn(
                         "flex items-center gap-2.5 px-4 py-2.5 text-sm transition-colors",
                         isActive
-                          ? "text-blue-300 bg-blue-500/10 font-semibold"
-                          : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                          ? "text-blue-600 dark:text-blue-300 bg-blue-500/10 font-semibold"
+                          : "text-muted-foreground hover:text-foreground hover:bg-accent"
                       )}
                     >
                       <span>{CATEGORY_ICONS[item.href]}</span>

@@ -42,8 +42,8 @@ export default function FilterableNewsList({ items }: { items: NewsItem[] }) {
             onClick={() => setActiveSource(source)}
             className={`px-2.5 sm:px-3 py-1 text-[11px] sm:text-[12px] rounded-full whitespace-nowrap transition-all duration-200 ${
               activeSource === source
-                ? "bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/25 font-medium"
-                : "text-muted-foreground/60 hover:text-muted-foreground hover:bg-white/5"
+                ? "bg-blue-500/15 text-blue-600 dark:text-blue-300 ring-1 ring-blue-500/25 font-medium"
+                : "text-muted-foreground/60 hover:text-muted-foreground hover:bg-accent"
             }`}
           >
             {source}

@@ -32,7 +32,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className="dark" style={{ scrollBehavior: "smooth" }}>
+    <html lang="ko" suppressHydrationWarning style={{ scrollBehavior: "smooth" }}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');document.documentElement.classList.add(t==='light'?'':'dark')}catch(e){document.documentElement.classList.add('dark')}})()`,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background`}
       >
