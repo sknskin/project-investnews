@@ -35,8 +35,8 @@ function IndexCard({ idx }: { idx: MarketIndex }) {
       <div
         className={cn(
           "absolute top-0 left-4 right-4 h-[2px] rounded-b-full",
-          isUp && "bg-emerald-500/60",
-          isDown && "bg-red-500/60",
+          isUp && "bg-red-500/60",
+          isDown && "bg-blue-500/60",
           isFlat && "bg-muted-foreground/20"
         )}
       />
@@ -56,8 +56,8 @@ function IndexCard({ idx }: { idx: MarketIndex }) {
           <p
             className={cn(
               "text-[13px] font-semibold tabular-nums",
-              isUp && "text-emerald-400",
-              isDown && "text-red-400",
+              isUp && "text-red-400",
+              isDown && "text-blue-400",
               isFlat && "text-muted-foreground"
             )}
           >
@@ -66,8 +66,8 @@ function IndexCard({ idx }: { idx: MarketIndex }) {
           <p
             className={cn(
               "text-[11px] font-medium tabular-nums",
-              isUp && "text-emerald-400/80",
-              isDown && "text-red-400/80",
+              isUp && "text-red-400/80",
+              isDown && "text-blue-400/80",
               isFlat && "text-muted-foreground/60"
             )}
           >
