@@ -20,11 +20,17 @@ export async function GET(
     return NextResponse.json({ error: "Invalid category" }, { status: 400 });
   }
 
-  const items = await fetchNewsByCategory(category as Category, 100);
+  try {
+    const items = await fetchNewsByCategory(category as Category, 100);
 
-  return NextResponse.json(items, {
-    headers: {
-      "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30",
-    },
-  });
+    return NextResponse.json(items, {
+      headers: {
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30",
+      },
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "뉴스 조회 실패";
+    console.error(`[News API] ${category} error:`, message);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
