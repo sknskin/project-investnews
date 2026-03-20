@@ -21,6 +21,11 @@ export const FEEDS: FeedSource[] = [
   { name: "SBS", url: "https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=02&plink=RSSREADER", category: "economy" },
   { name: "MBC", url: "http://imnews.imbc.com/rss/news/news_04.xml", category: "economy" },
   { name: "KBS", url: "https://news.kbs.co.kr/api/rss/rss.php?rcnt=10&ctgr=EK", category: "economy" },
+  { name: "파이낸셜뉴스", url: "https://www.fnnews.com/rss/fn_economy.xml", category: "economy" },
+  { name: "뉴스1", url: "https://www.news1.kr/rss/economy", category: "economy" },
+  { name: "한국일보", url: "https://rss.hankooki.com/news/hk_economy.xml", category: "economy" },
+  { name: "한겨레", url: "https://www.hani.co.kr/rss/economy/", category: "economy" },
+  { name: "경향신문", url: "https://www.khan.co.kr/rss/rssdata/economy_news.xml", category: "economy" },
   { name: "Google 경제", url: "https://news.google.com/rss/search?q=한국+경제+금리+물가&hl=ko&gl=KR&ceid=KR:ko", category: "economy", broad: true },
   { name: "Google 부동산", url: "https://news.google.com/rss/search?q=부동산+아파트+전세+매매&hl=ko&gl=KR&ceid=KR:ko", category: "economy", broad: true },
 
@@ -34,6 +39,8 @@ export const FEEDS: FeedSource[] = [
   { name: "SBS", url: "https://news.sbs.co.kr/news/SectionRssFeed.do?sectionId=01&plink=RSSREADER", category: "politics" },
   { name: "MBC", url: "http://imnews.imbc.com/rss/news/news_01.xml", category: "politics" },
   { name: "KBS", url: "https://news.kbs.co.kr/api/rss/rss.php?rcnt=10&ctgr=PO", category: "politics" },
+  { name: "한겨레", url: "https://www.hani.co.kr/rss/politics/", category: "politics" },
+  { name: "경향신문", url: "https://www.khan.co.kr/rss/rssdata/politic_news.xml", category: "politics" },
   { name: "Google 정치", url: "https://news.google.com/rss/search?q=한국+정치+국회+대통령&hl=ko&gl=KR&ceid=KR:ko", category: "politics", broad: true },
   { name: "Google 외교", url: "https://news.google.com/rss/search?q=한국+외교+안보+북한&hl=ko&gl=KR&ceid=KR:ko", category: "politics", broad: true },
 
@@ -58,11 +65,24 @@ export const FEEDS: FeedSource[] = [
   { name: "Economist", url: "https://www.economist.com/finance-and-economics/rss.xml", category: "world" },
   // — 범용 (키워드 필터)
   { name: "BBC World", url: "http://feeds.bbci.co.uk/news/world/rss.xml", category: "world", broad: true },
+  { name: "BBC Middle East", url: "http://feeds.bbci.co.uk/news/world/middle_east/rss.xml", category: "world", broad: true },
   { name: "Al Jazeera", url: "https://www.aljazeera.com/xml/rss/all.xml", category: "world", broad: true },
+  { name: "Al Jazeera Middle East", url: "https://www.aljazeera.com/xml/rss/all.xml?tag=middleeast", category: "world", broad: true },
   { name: "AP News", url: "https://rsshub.app/apnews/topics/business", category: "world" },
+  { name: "AP News World", url: "https://rsshub.app/apnews/topics/world-news", category: "world", broad: true },
+  { name: "Reuters World", url: "https://www.reutersagency.com/feed/?best-topics=political-general&post_type=best", category: "world", broad: true },
+  { name: "CNN World", url: "http://rss.cnn.com/rss/edition_world.rss", category: "world", broad: true },
+  { name: "CNN Middle East", url: "http://rss.cnn.com/rss/edition_meast.rss", category: "world", broad: true },
+  { name: "NYT World", url: "https://rss.nytimes.com/services/xml/rss/nyt/World.xml", category: "world", broad: true },
+  { name: "NYT Middle East", url: "https://rss.nytimes.com/services/xml/rss/nyt/MiddleEast.xml", category: "world", broad: true },
   { name: "Google 세계경제", url: "https://news.google.com/rss/search?q=global+economy+trade+tariff&hl=en&gl=US&ceid=US:en", category: "world", broad: true },
   { name: "Google 연준", url: "https://news.google.com/rss/search?q=Federal+Reserve+interest+rate&hl=en&gl=US&ceid=US:en", category: "world", broad: true },
   { name: "Google 유가", url: "https://news.google.com/rss/search?q=oil+price+OPEC+energy&hl=en&gl=US&ceid=US:en", category: "world", broad: true },
+  // — 이란전쟁/중동 속보 (Google News RSS)
+  // Iran war / Middle East breaking news feeds
+  { name: "Google 이란전쟁", url: "https://news.google.com/rss/search?q=이란+전쟁+중동+미사일+공습&hl=ko&gl=KR&ceid=KR:ko", category: "world", broad: true },
+  { name: "Google Iran War", url: "https://news.google.com/rss/search?q=Iran+war+missile+strike+Middle+East&hl=en&gl=US&ceid=US:en", category: "world", broad: true },
+  { name: "Google 중동분쟁", url: "https://news.google.com/rss/search?q=중동+분쟁+이스라엘+이란+전쟁&hl=ko&gl=KR&ceid=KR:ko", category: "world", broad: true },
 
   // ══════════════════════════════════════
   // 코인/크립토
