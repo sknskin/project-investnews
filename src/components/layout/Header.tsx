@@ -19,7 +19,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 const NAV_ITEMS = [
   { href: "/", label: "전체" },
-  { href: "/summary", label: "요약" },
+  { href: "/summary", label: "지수" },
   ...Object.entries(CATEGORY_LABELS).map(([key, label]) => ({
     href: `/${key}`,
     label,

@@ -6,7 +6,7 @@ import SummaryClient from "@/components/market/SummaryClient";
 export const revalidate = 60;
 
 export const metadata = {
-  title: "시장 요약 — InvestNews",
+  title: "시장 지수 — InvestNews",
   description: "나스닥, S&P 500, 코스피, 환율, 원자재 등 주요 시장 지수를 한눈에 확인하세요.",
 };
 
@@ -20,7 +20,7 @@ export default async function SummaryPage() {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-1">
           <span className="text-2xl">📋</span>
-          <h1 className="text-2xl font-bold tracking-tight">시장 요약</h1>
+          <h1 className="text-2xl font-bold tracking-tight">시장 지수</h1>
         </div>
         <p className="text-sm text-muted-foreground/50 pl-0 sm:pl-10">
           주요 시장 지수 · 실시간 업데이트
