@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { MarketIndex } from "@/lib/market";
 import { cn } from "@/lib/utils";
+import PriceChart from "./PriceChart";
 
 /** 지수별 통화 접두사 */
 function getCurrencyPrefix(symbol: string): string {
@@ -78,6 +79,14 @@ const INDEX_DESCRIPTIONS: Record<string, { desc: string; detail: string }> = {
   "^KQ11": {
     desc: "코스닥 지수",
     detail: "한국 코스닥 시장에 상장된 중소·벤처 기업 중심의 지수입니다. 바이오, IT, 게임 등 성장산업 기업이 많이 포함되어 있으며, 코스피보다 변동성이 높고 성장주 투자 심리를 반영합니다.",
+  },
+  "^KS200": {
+    desc: "코스피 200 지수",
+    detail: "한국거래소 상장 대형주 200개로 구성된 시가총액 가중 지수입니다. 코스피의 핵심 종목만 포함하여 한국 대표 기업의 성과를 추적합니다. 선물·옵션의 기초자산으로 사용되며, 기관 투자자들의 벤치마크 지수입니다.",
+  },
+  "EWY": {
+    desc: "iShares MSCI South Korea ETF (야간선물 대용)",
+    detail: "미국 NYSE에 상장된 한국 시장 추종 ETF로, 삼성전자·SK하이닉스·현대차 등 한국 대표주를 포함합니다. 미국 장 시간(한국 야간 23:30~06:00)에 거래되어 코스피 야간선물의 대용 지표로 활용됩니다. 한국 시장이 닫힌 후에도 글로벌 이벤트에 대한 한국 주식의 반응을 실시간으로 확인할 수 있습니다.",
   },
   "KRW=X": {
     desc: "달러/원 환율",
@@ -220,6 +229,10 @@ export default function IndexDetailModal({ idx, onClose }: IndexDetailModalProps
             </span>
           </div>
         </div>
+
+        {/* 가격 차트 (2일간 인트라데이) */}
+        {/* Price chart (2-day intraday) */}
+        <PriceChart symbol={idx.symbol} />
 
         {/* 지수 설명 */}
         {info && (

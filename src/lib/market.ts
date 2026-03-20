@@ -36,6 +36,10 @@ const MARKET_INDICES = [
   // 한국 지수
   { symbol: "^KS11", name: "KOSPI", nameKo: "코스피", group: "한국 지수" },
   { symbol: "^KQ11", name: "KOSDAQ", nameKo: "코스닥", group: "한국 지수" },
+  { symbol: "^KS200", name: "KOSPI 200", nameKo: "코스피 200", group: "한국 지수" },
+  // 야간선물 대용 — 미국 장 시간(한국 야간)에 한국 시장 방향성 확인
+  // Night futures proxy — tracks Korean market during US trading hours
+  { symbol: "EWY", name: "iShares MSCI South Korea ETF", nameKo: "한국 ETF (야간 대용)", group: "한국 지수" },
 
   // 환율
   { symbol: "KRW=X", name: "USD/KRW", nameKo: "달러/원 환율", group: "환율" },
