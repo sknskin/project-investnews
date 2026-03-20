@@ -255,7 +255,7 @@ export default function PriceChart({ symbol }: PriceChartProps) {
     <div className="rounded-xl border border-border/30 bg-muted/10 p-2 sm:p-4 mb-5">
       <svg
         viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
-        className="w-full h-auto"
+        className="w-full h-auto lg:min-h-[420px]"
         preserveAspectRatio="xMidYMid meet"
       >
         <defs>

@@ -172,7 +172,7 @@ export default function IndexDetailModal({ idx, onClose }: IndexDetailModalProps
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in-up p-2 sm:p-4"
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
-      <div className="relative w-full max-w-2xl rounded-2xl border border-border/40 bg-card p-4 sm:p-6 shadow-2xl max-h-[95vh] overflow-y-auto">
+      <div className="relative w-full max-w-2xl lg:max-w-4xl rounded-2xl border border-border/40 bg-card p-4 sm:p-6 lg:p-8 shadow-2xl max-h-[95vh] overflow-y-auto">
         {/* 닫기 버튼 */}
         <button
           onClick={onClose}
