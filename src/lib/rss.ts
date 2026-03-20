@@ -64,9 +64,9 @@ const RELEVANCE_KEYWORDS: Record<Category, RegExp> = {
   economy:
     /경제|금리|물가|GDP|수출|수입|무역|환율|부동산|고용|실업|인플|디플|성장률|경기|소비자|기업|산업|재정|예산|세금|투자|금융|은행|채권|펀드|자산|부채|대출|연금|보험|증권|주식|stock|market|trade|economy|inflation|rate|growth|fiscal|monetary|bank|fed|ecb/i,
   politics:
-    /정치|국회|대통령|총리|여당|야당|선거|법안|입법|탄핵|청문|외교|안보|통일|북한|정부|장관|의원|정당|개혁|인사|정책|규제|예산|politics|government|election|congress|parliament|policy|minister|sanction|diplomacy/i,
+    /정치|국회|대통령|총리|여당|야당|선거|법안|입법|탄핵|청문|외교|안보|통일|북한|정부|장관|의원|정당|개혁|인사|정책|규제|예산|전쟁|war|군사|military|중동|이란|Iran|미사일|missile|공습|airstrike|휴전|ceasefire|NATO|핵|nuclear|테러|terror|politics|government|election|congress|parliament|policy|minister|sanction|diplomacy/i,
   world:
-    /경제|금융|시장|무역|관세|금리|인플|GDP|석유|원유|달러|유로|위안|엔화|연준|Fed|ECB|BOJ|IMF|OPEC|G7|G20|economy|market|trade|tariff|rate|inflation|stock|oil|dollar|growth|recession|bank|finance|invest|business|fiscal|monetary|treasury|bond|yield/i,
+    /경제|금융|시장|무역|관세|금리|인플|GDP|석유|원유|달러|유로|위안|엔화|연준|Fed|ECB|BOJ|IMF|OPEC|G7|G20|전쟁|war|군사|military|미사일|missile|공습|airstrike|폭격|bombing|침공|invasion|휴전|ceasefire|제재|sanction|중동|Middle East|이란|Iran|이스라엘|Israel|NATO|핵|nuclear|테러|terror|분쟁|conflict|난민|refugee|러시아|Russia|우크라이나|Ukraine|크렘린|Kremlin|푸틴|Putin|젤렌스키|Zelensky|economy|market|trade|tariff|rate|inflation|stock|oil|dollar|growth|recession|bank|finance|invest|business|fiscal|monetary|treasury|bond|yield/i,
   crypto:
     /비트코인|이더리움|암호화폐|코인|토큰|블록체인|NFT|디파이|DeFi|거래소|채굴|스테이킹|알트코인|리플|솔라나|도지|밈코인|레이어|에어드랍|bitcoin|ethereum|crypto|blockchain|token|defi|nft|mining|altcoin|exchange|BTC|ETH|XRP|SOL|DOGE|binance|coinbase|wallet|stablecoin/i,
   stocks:
