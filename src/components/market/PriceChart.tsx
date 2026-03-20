@@ -18,12 +18,12 @@ interface PriceChartProps {
 
 // 차트 레이아웃 상수 (큰 viewBox → 반응형으로 축소)
 // Chart layout constants (large viewBox → scales down responsively)
-const CHART_WIDTH = 600;
-const CHART_HEIGHT = 300;
-const PADDING_LEFT = 70;
-const PADDING_RIGHT = 15;
-const PADDING_TOP = 20;
-const PADDING_BOTTOM = 40;
+const CHART_WIDTH = 800;
+const CHART_HEIGHT = 400;
+const PADDING_LEFT = 80;
+const PADDING_RIGHT = 20;
+const PADDING_TOP = 25;
+const PADDING_BOTTOM = 50;
 const DRAW_WIDTH = CHART_WIDTH - PADDING_LEFT - PADDING_RIGHT;
 const DRAW_HEIGHT = CHART_HEIGHT - PADDING_TOP - PADDING_BOTTOM;
 
@@ -224,7 +224,7 @@ export default function PriceChart({ symbol }: PriceChartProps) {
   if (loading) {
     return (
       <div className="rounded-xl border border-border/30 bg-muted/10 p-3 sm:p-4 mb-5">
-        <div className="h-[200px] sm:h-[260px] flex items-center justify-center">
+        <div className="h-[240px] sm:h-[340px] flex items-center justify-center">
           <div className="flex items-center gap-2 text-muted-foreground/40 text-sm">
             <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -283,7 +283,7 @@ export default function PriceChart({ symbol }: PriceChartProps) {
               y={tick.y + 4}
               textAnchor="end"
               className="fill-muted-foreground/60"
-              fontSize="11"
+              fontSize="14"
               fontFamily="system-ui, sans-serif"
             >
               {formatPriceLabel(tick.value)}
@@ -324,7 +324,7 @@ export default function PriceChart({ symbol }: PriceChartProps) {
               y={PADDING_TOP + 14}
               textAnchor="start"
               className="fill-muted-foreground/40"
-              fontSize="10"
+              fontSize="13"
               fontWeight="600"
               fontFamily="system-ui, sans-serif"
             >
@@ -344,7 +344,7 @@ export default function PriceChart({ symbol }: PriceChartProps) {
               y2={prevCloseY}
               stroke="#a78bfa"
               strokeOpacity="0.4"
-              strokeWidth="0.8"
+              strokeWidth="1.2"
               strokeDasharray="6,4"
             />
             <text
@@ -353,7 +353,7 @@ export default function PriceChart({ symbol }: PriceChartProps) {
               textAnchor="end"
               fill="#a78bfa"
               fillOpacity="0.7"
-              fontSize="9"
+              fontSize="12"
               fontWeight="bold"
               fontFamily="system-ui, sans-serif"
             >
@@ -376,7 +376,7 @@ export default function PriceChart({ symbol }: PriceChartProps) {
             d={seg}
             fill="none"
             stroke={lineColor}
-            strokeWidth="2"
+            strokeWidth="2.5"
             strokeLinejoin="round"
             strokeLinecap="round"
           />
@@ -391,7 +391,7 @@ export default function PriceChart({ symbol }: PriceChartProps) {
             y={CHART_HEIGHT - 10}
             textAnchor="middle"
             className="fill-muted-foreground/50"
-            fontSize="10"
+            fontSize="13"
             fontFamily="system-ui, sans-serif"
           >
             {label.label}
