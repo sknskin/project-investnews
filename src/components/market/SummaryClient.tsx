@@ -24,9 +24,10 @@ function IndexCard({ idx, onClick }: { idx: MarketIndex; onClick: () => void }) 
   const suffix = getCurrencySuffix(idx.symbol);
 
   return (
-    <div
+    <button
+      type="button"
       onClick={onClick}
-      className="group relative rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm p-4 hover:border-border/60 hover:bg-card/80 transition-all duration-200 cursor-pointer"
+      className="group relative rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm p-4 hover:border-border/60 hover:bg-card/80 transition-all duration-200 cursor-pointer text-left w-full focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:ring-offset-1 focus:ring-offset-transparent"
     >
       {/* 상승/하락 인디케이터 바 */}
       <div
@@ -72,7 +73,7 @@ function IndexCard({ idx, onClick }: { idx: MarketIndex; onClick: () => void }) 
           </p>
         </div>
       </div>
-    </div>
+    </button>
   );
 }
 
