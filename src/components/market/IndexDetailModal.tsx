@@ -171,21 +171,25 @@ export default function IndexDetailModal({ idx, onClose }: IndexDetailModalProps
       ref={overlayRef}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in-up p-2 sm:p-4"
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="index-detail-title"
     >
       <div className="relative w-full max-w-2xl lg:max-w-4xl rounded-2xl border border-border/40 bg-card p-4 sm:p-6 lg:p-8 shadow-2xl max-h-[95vh] overflow-y-auto">
         {/* 닫기 버튼 */}
         <button
           onClick={onClose}
+          aria-label="닫기"
           className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
           </svg>
         </button>
 
         {/* 헤더 */}
         <div className="mb-5">
-          <h3 className="text-lg font-bold text-foreground">{idx.nameKo}</h3>
+          <h3 id="index-detail-title" className="text-lg font-bold text-foreground">{idx.nameKo}</h3>
           <p className="text-[12px] text-muted-foreground/60">{idx.name} · {idx.symbol}</p>
         </div>
 
