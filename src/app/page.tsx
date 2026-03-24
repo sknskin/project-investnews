@@ -5,11 +5,9 @@ import CategorySection from "@/components/news/CategorySection";
 export const revalidate = 60;
 
 const CATEGORY_ORDER: Category[] = [
-  "economy",
-  "politics",
-  "world",
+  "domestic",
+  "international",
   "crypto",
-  "stocks",
 ];
 
 export default async function HomePage() {
@@ -26,7 +24,7 @@ export default async function HomePage() {
           </span>
         </h1>
         <p className="text-sm text-muted-foreground/60 mt-2">
-          국내외 경제·정치·코인·주식 뉴스를 실시간으로 수집합니다
+          국내·해외·코인 투자 뉴스를 실시간으로 수집합니다
         </p>
       </div>
 
