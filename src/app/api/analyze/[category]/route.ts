@@ -5,11 +5,9 @@ import { Category } from "@/types";
 export const maxDuration = 60;
 
 const VALID_CATEGORIES: Category[] = [
-  "economy",
-  "politics",
-  "world",
+  "domestic",
+  "international",
   "crypto",
-  "stocks",
 ];
 
 // 인메모리 캐시 (카테고리+headlines 해시 기반)

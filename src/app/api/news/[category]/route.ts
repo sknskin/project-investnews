@@ -3,11 +3,9 @@ import { fetchNewsByCategory } from "@/lib/rss";
 import { Category } from "@/types";
 
 const VALID_CATEGORIES: Category[] = [
-  "economy",
-  "politics",
-  "world",
+  "domestic",
+  "international",
   "crypto",
-  "stocks",
 ];
 
 export async function GET(
