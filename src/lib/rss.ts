@@ -3,7 +3,7 @@ import { FEEDS } from "./feeds";
 import { Category, NewsItem } from "@/types";
 
 const parser = new Parser({
-  timeout: 5000,
+  timeout: 3000,
   maxRedirects: 2,
   headers: {
     "User-Agent":
@@ -55,22 +55,19 @@ function parseDate(dateStr: string | undefined): string | null {
   if (isNaN(d.getTime())) return null;
   const now = Date.now();
   if (d.getTime() > now + 3600000) return null;
-  if (now - d.getTime() > 14 * 86400000) return null; // 14일로 축소
+  if (now - d.getTime() > 7 * 86400000) return null; // 7일로 축소
   return d.toISOString();
 }
 
 // 카테고리별 관련성 키워드
+// Relevance keywords per category
 const RELEVANCE_KEYWORDS: Record<Category, RegExp> = {
-  economy:
-    /경제|금리|물가|GDP|수출|수입|무역|환율|부동산|고용|실업|인플|디플|성장률|경기|소비자|기업|산업|재정|예산|세금|투자|금융|은행|채권|펀드|자산|부채|대출|연금|보험|증권|주식|stock|market|trade|economy|inflation|rate|growth|fiscal|monetary|bank|fed|ecb/i,
-  politics:
-    /정치|국회|대통령|총리|여당|야당|선거|법안|입법|탄핵|청문|외교|안보|통일|북한|정부|장관|의원|정당|개혁|인사|정책|규제|예산|전쟁|war|군사|military|중동|이란|Iran|미사일|missile|공습|airstrike|휴전|ceasefire|NATO|핵|nuclear|테러|terror|politics|government|election|congress|parliament|policy|minister|sanction|diplomacy/i,
-  world:
-    /경제|금융|시장|무역|관세|금리|인플|GDP|석유|원유|달러|유로|위안|엔화|연준|Fed|ECB|BOJ|IMF|OPEC|G7|G20|전쟁|war|군사|military|미사일|missile|공습|airstrike|폭격|bombing|침공|invasion|휴전|ceasefire|제재|sanction|중동|Middle East|이란|Iran|이스라엘|Israel|NATO|핵|nuclear|테러|terror|분쟁|conflict|난민|refugee|러시아|Russia|우크라이나|Ukraine|크렘린|Kremlin|푸틴|Putin|젤렌스키|Zelensky|economy|market|trade|tariff|rate|inflation|stock|oil|dollar|growth|recession|bank|finance|invest|business|fiscal|monetary|treasury|bond|yield/i,
+  domestic:
+    /경제|금리|물가|GDP|수출|수입|무역|환율|부동산|고용|실업|인플|디플|성장률|경기|소비자|기업|산업|재정|예산|세금|투자|금융|은행|채권|펀드|자산|부채|대출|연금|보험|증권|주식|stock|market|trade|economy|inflation|rate|growth|fiscal|monetary|bank|fed|ecb|정치|국회|대통령|총리|여당|야당|선거|법안|입법|탄핵|청문|외교|안보|통일|북한|정부|장관|의원|정당|개혁|인사|정책|규제|예산|전쟁|war|군사|military|중동|이란|Iran|미사일|missile|공습|airstrike|휴전|ceasefire|NATO|핵|nuclear|테러|terror|politics|government|election|congress|parliament|policy|minister|sanction|diplomacy|주가|증시|코스피|코스닥|나스닥|다우|S&P|상장|IPO|배당|실적|매출|영업이익|시가총액|PER|EPS|PBR|ROE|공매도|기관|외국인|개인|ETF|펀드|종목|반도체|2차전지|바이오|채권|선물|옵션|파생|공모주|부동산정책|금감원|한은/i,
+  international:
+    /경제|금융|시장|무역|관세|금리|인플|GDP|석유|원유|달러|유로|위안|엔화|연준|Fed|ECB|BOJ|IMF|OPEC|G7|G20|전쟁|war|군사|military|미사일|missile|공습|airstrike|폭격|bombing|침공|invasion|휴전|ceasefire|제재|sanction|중동|Middle East|이란|Iran|이스라엘|Israel|NATO|핵|nuclear|테러|terror|분쟁|conflict|난민|refugee|러시아|Russia|우크라이나|Ukraine|크렘린|Kremlin|푸틴|Putin|젤렌스키|Zelensky|economy|market|trade|tariff|rate|inflation|stock|oil|dollar|growth|recession|bank|finance|invest|business|fiscal|monetary|treasury|bond|yield|share|equity|nasdaq|dow|earnings|dividend|rally|bull|bear|index|portfolio|valuation|S&P|IPO|ETF/i,
   crypto:
     /비트코인|이더리움|암호화폐|코인|토큰|블록체인|NFT|디파이|DeFi|거래소|채굴|스테이킹|알트코인|리플|솔라나|도지|밈코인|레이어|에어드랍|bitcoin|ethereum|crypto|blockchain|token|defi|nft|mining|altcoin|exchange|BTC|ETH|XRP|SOL|DOGE|binance|coinbase|wallet|stablecoin/i,
-  stocks:
-    /주식|주가|증시|코스피|코스닥|나스닥|다우|S&P|상장|IPO|배당|실적|매출|영업이익|시가총액|PER|EPS|PBR|ROE|공매도|기관|외국인|개인|ETF|펀드|종목|반도체|2차전지|바이오|stock|share|equity|nasdaq|dow|market|earnings|dividend|rally|bull|bear|index|portfolio|valuation/i,
 };
 
 function isRelevant(title: string, snippet: string, category: Category): boolean {
@@ -91,7 +88,7 @@ function deduplicateByTitle(items: NewsItem[]): NewsItem[] {
       .replace(/[\s\-–—·|:：""''「」\[\]()（）<>《》『』]/g, "")
       .replace(/[.,!?;·…]/g, "")
       .toLowerCase()
-      .slice(0, 25);
+      .slice(0, 35);
     if (key.length < 5) return false;
     if (seen.has(key)) return false;
     seen.add(key);
@@ -141,21 +138,34 @@ async function parseFeedWithRetry(
       return items;
     } catch {
       if (attempt === 0) {
-        await new Promise((r) => setTimeout(r, 1000));
+        await new Promise((r) => setTimeout(r, 500));
       }
     }
   }
   return [];
 }
 
+// 서버 사이드 인메모리 캐시
+// Server-side in-memory cache
+const newsCache = new Map<string, { items: NewsItem[]; timestamp: number }>();
+const NEWS_CACHE_TTL = 120_000; // 2분
+
 export async function fetchNewsByCategory(
   category: Category,
   limit = 100
 ): Promise<NewsItem[]> {
+  // 캐시 확인
+  // Check cache first
+  const cacheKey = `${category}:${limit}`;
+  const cached = newsCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < NEWS_CACHE_TTL) {
+    return cached.items;
+  }
+
   const categoryFeeds = FEEDS.filter((f) => f.category === category);
 
   // 피드를 배치로 나눠서 동시 요청 수 제한 (서버 과부하 방지)
-  const BATCH_SIZE = 5;
+  const BATCH_SIZE = 15;
   const allItems: NewsItem[] = [];
 
   for (let i = 0; i < categoryFeeds.length; i += BATCH_SIZE) {
@@ -178,18 +188,22 @@ export async function fetchNewsByCategory(
   );
 
   const unique = deduplicateByTitle(allItems);
-  return unique.slice(0, limit);
+  const sliced = unique.slice(0, limit);
+
+  // 캐시에 저장
+  // Store in cache
+  newsCache.set(cacheKey, { items: sliced, timestamp: Date.now() });
+
+  return sliced;
 }
 
 export async function fetchAllCategories(
   limitPerCategory = 6
 ): Promise<Record<Category, NewsItem[]>> {
   const categories: Category[] = [
-    "economy",
-    "politics",
-    "world",
+    "domestic",
+    "international",
     "crypto",
-    "stocks",
   ];
 
   const results = await Promise.allSettled(
