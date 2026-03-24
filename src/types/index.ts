@@ -1,4 +1,4 @@
-export type Category = "economy" | "politics" | "world" | "crypto" | "stocks";
+export type Category = "domestic" | "international" | "crypto";
 
 export interface NewsItem {
   title: string;
@@ -18,9 +18,7 @@ export interface FeedSource {
 }
 
 export const CATEGORY_LABELS: Record<Category, string> = {
-  economy: "국내 경제",
-  politics: "국내 정치",
-  world: "해외 경제/정치",
-  crypto: "코인/크립토",
-  stocks: "주식/증권",
+  domestic: "국내뉴스",
+  international: "해외뉴스",
+  crypto: "코인뉴스",
 };
