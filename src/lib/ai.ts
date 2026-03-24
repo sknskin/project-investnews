@@ -2,11 +2,9 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NewsItem, Category } from "@/types";
 
 const CATEGORY_CONTEXT: Record<Category, string> = {
-  economy: "국내 경제 뉴스",
-  politics: "국내 정치 뉴스 (경제·시장 영향 관점)",
-  world: "해외 경제/정치 뉴스",
+  domestic: "국내 투자 뉴스 (경제, 증권, 정책, 부동산, 금리 등)",
+  international: "해외 투자 뉴스 (글로벌 경제, 미국/유럽/아시아 시장, 원자재, 지정학 등)",
   crypto: "암호화폐/코인 뉴스",
-  stocks: "주식/증권 뉴스",
 };
 
 function buildPrompt(items: NewsItem[], category: Category): string {
