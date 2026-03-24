@@ -2,12 +2,12 @@ import Link from "next/link";
 import { Category, CATEGORY_LABELS, NewsItem } from "@/types";
 import NewsCard from "./NewsCard";
 
+// 카테고리별 아이콘 매핑
+// Category icon mapping
 const CATEGORY_ICONS: Record<Category, string> = {
-  economy: "💰",
-  politics: "🏛️",
-  world: "🌍",
+  domestic: "🇰🇷",
+  international: "🌍",
   crypto: "₿",
-  stocks: "📈",
 };
 
 interface Props {

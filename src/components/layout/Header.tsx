@@ -4,26 +4,26 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { CATEGORY_LABELS } from "@/types";
 import ThemeToggle from "./ThemeToggle";
 
+// 카테고리별 아이콘 매핑
+// Category icon mapping
 const CATEGORY_ICONS: Record<string, string> = {
   "/": "🏠",
-  "/summary": "📋",
-  "/economy": "💰",
-  "/politics": "🏛️",
-  "/world": "🌍",
+  "/summary": "📊",
+  "/domestic": "🇰🇷",
+  "/international": "🌍",
   "/crypto": "₿",
-  "/stocks": "📈",
 };
 
+// 네비게이션 항목
+// Navigation items
 const NAV_ITEMS = [
   { href: "/", label: "전체" },
   { href: "/summary", label: "지수" },
-  ...Object.entries(CATEGORY_LABELS).map(([key, label]) => ({
-    href: `/${key}`,
-    label,
-  })),
+  { href: "/domestic", label: "국내뉴스" },
+  { href: "/international", label: "해외뉴스" },
+  { href: "/crypto", label: "코인뉴스" },
 ];
 
 export default function Header() {
