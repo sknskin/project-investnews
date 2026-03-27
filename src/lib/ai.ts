@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NewsItem, Category } from "@/types";
+import { fetchMarketIndices } from "./market";
 
 const CATEGORY_CONTEXT: Record<Category, string> = {
   domestic: "국내 투자 뉴스 (경제, 증권, 정책, 부동산, 금리 등)",
@@ -7,7 +8,19 @@ const CATEGORY_CONTEXT: Record<Category, string> = {
   crypto: "암호화폐/코인 뉴스",
 };
 
-function buildPrompt(items: NewsItem[], category: Category): string {
+// 주요 시장 지수를 간결하게 포맷 — AI 프롬프트 컨텍스트용
+// Format key market indices concisely — for AI prompt context
+function formatIndicesForPrompt(indices: { nameKo: string; price: number; change: number; changePercent: number }[]): string {
+  if (indices.length === 0) return "(지수 데이터 조회 실패)";
+  return indices
+    .map((idx) => {
+      const sign = idx.change >= 0 ? "+" : "";
+      return `${idx.nameKo}: ${idx.price.toLocaleString("en-US", { maximumFractionDigits: 2 })} (${sign}${idx.changePercent.toFixed(2)}%)`;
+    })
+    .join(" | ");
+}
+
+async function buildPrompt(items: NewsItem[], category: Category): Promise<string> {
   const headlines = items
     .slice(0, 20)
     .map((item, i) => `${i + 1}. [${item.source}] ${item.title}${item.snippet ? ` — ${item.snippet}` : ""}`)
@@ -18,9 +31,23 @@ function buildPrompt(items: NewsItem[], category: Category): string {
   const now = new Date();
   const timestamp = `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 ${now.getHours()}시 ${now.getMinutes()}분 (KST 기준)`;
 
+  // 실시간 시장 지수 조회 — AI가 현재 시장 상황을 정확히 인지하도록
+  // Fetch live market indices — so AI knows the exact current market state
+  let marketContext = "";
+  try {
+    const indices = await fetchMarketIndices();
+    if (indices.length > 0) {
+      marketContext = `\n\n[현재 주요 시장 지수 (실시간)]\n${formatIndicesForPrompt(indices)}`;
+    }
+  } catch {
+    // 지수 조회 실패 시 뉴스만으로 분석 진행
+    // If index fetch fails, proceed with news-only analysis
+  }
+
   return `당신은 골드만삭스 출신 20년 경력의 수석 투자 전략가입니다. 모든 뉴스를 "투자 자산(주식, 채권, 코인, 원자재, 환율, 부동산 등)에 어떤 영향을 미치는가"의 관점에서 깊이 있게 분석합니다.
 
-현재 시각: ${timestamp}
+현재 시각: ${timestamp}${marketContext}
+
 아래는 최신 ${CATEGORY_CONTEXT[category]} 헤드라인과 요약입니다.
 
 ${headlines}
@@ -148,7 +175,7 @@ export async function analyzeHeadlines(
     pubDate: "",
     category,
   })) as NewsItem[];
-  const prompt = buildPrompt(items, category);
+  const prompt = await buildPrompt(items, category);
 
   const providers: { name: string; fn: () => Promise<string> }[] = [];
 
