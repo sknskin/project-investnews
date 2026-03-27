@@ -17,7 +17,14 @@ function buildPrompt(indices: IndexInput[]): string {
     })
     .join("\n");
 
+  // 현재 시각을 프롬프트에 포함
+  // Include current timestamp in prompt
+  const now = new Date();
+  const timestamp = `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 ${now.getHours()}시 ${now.getMinutes()}분 (KST 기준)`;
+
   return `당신은 골드만삭스 출신 20년 경력의 수석 투자 전략가입니다. 아래는 현재 실시간 글로벌 시장 지수 데이터입니다.
+
+분석 시점: ${timestamp}
 
 ${data}
 

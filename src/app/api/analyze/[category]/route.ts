@@ -16,7 +16,8 @@ const analysisCache = new Map<
   string,
   { result: string; timestamp: number }
 >();
-const CACHE_TTL = 10 * 60 * 1000; // 10분
+const CACHE_TTL = 3 * 60 * 1000; // 3분 — 시장 변동 반영을 위해 단축
+// 3 minutes — shortened to reflect market changes
 const MAX_CACHE_SIZE = 50;
 
 // 만료된 캐시 엔트리 정리

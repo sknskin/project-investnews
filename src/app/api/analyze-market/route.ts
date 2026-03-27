@@ -6,7 +6,8 @@ export const maxDuration = 60;
 // 인메모리 캐시 (해시 기반)
 // In-memory cache (hash based)
 const cache = new Map<string, { result: string; timestamp: number }>();
-const CACHE_TTL = 10 * 60 * 1000;
+const CACHE_TTL = 3 * 60 * 1000; // 3분 — 시장 변동 반영을 위해 단축
+// 3 minutes — shortened to reflect market changes
 
 // indices 기반 간단한 해시 생성
 // Generate simple hash from indices

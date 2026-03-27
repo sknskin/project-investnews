@@ -148,7 +148,8 @@ async function parseFeedWithRetry(
 // 서버 사이드 인메모리 캐시
 // Server-side in-memory cache
 const newsCache = new Map<string, { items: NewsItem[]; timestamp: number }>();
-const NEWS_CACHE_TTL = 120_000; // 2분
+const NEWS_CACHE_TTL = 60_000; // 1분 — 메뉴 이동 시 최신 뉴스 반영
+// 1 minute — ensures fresh news on navigation
 
 export async function fetchNewsByCategory(
   category: Category,

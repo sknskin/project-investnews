@@ -13,9 +13,15 @@ function buildPrompt(items: NewsItem[], category: Category): string {
     .map((item, i) => `${i + 1}. [${item.source}] ${item.title}${item.snippet ? ` — ${item.snippet}` : ""}`)
     .join("\n");
 
+  // 현재 시각을 프롬프트에 포함 — AI가 시점을 인지하도록
+  // Include current timestamp so AI is aware of the exact point in time
+  const now = new Date();
+  const timestamp = `${now.getFullYear()}년 ${now.getMonth() + 1}월 ${now.getDate()}일 ${now.getHours()}시 ${now.getMinutes()}분 (KST 기준)`;
+
   return `당신은 골드만삭스 출신 20년 경력의 수석 투자 전략가입니다. 모든 뉴스를 "투자 자산(주식, 채권, 코인, 원자재, 환율, 부동산 등)에 어떤 영향을 미치는가"의 관점에서 깊이 있게 분석합니다.
 
-아래는 오늘의 ${CATEGORY_CONTEXT[category]} 헤드라인과 요약입니다.
+현재 시각: ${timestamp}
+아래는 최신 ${CATEGORY_CONTEXT[category]} 헤드라인과 요약입니다.
 
 ${headlines}
 
