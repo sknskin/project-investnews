@@ -75,6 +75,46 @@ function isRelevant(title: string, snippet: string, category: Category): boolean
   return RELEVANCE_KEYWORDS[category].test(text);
 }
 
+// 속보 감지 키워드
+// Breaking news detection keywords
+const BREAKING_KEYWORDS =
+  /속보|긴급|breaking|급등|급락|폭락|폭등|서킷브레이커|금리인상|금리인하/i;
+
+// 속보 감지 시간 기준 (밀리초)
+// Breaking news time threshold (ms)
+const BREAKING_TIME_THRESHOLD_MS = 2 * 60 * 60 * 1000; // 2시간
+
+// 대폭 변동률 언급 패턴 (±3% 이상)
+// Large change percent mention pattern (±3% or more)
+const LARGE_CHANGE_PATTERN = /[+-]?\d{1,2}(\.\d+)?%/;
+const MIN_CHANGE_PERCENT = 3;
+
+/**
+ * 속보 여부를 감지한다.
+ * Detects whether a news item qualifies as breaking news.
+ */
+function detectBreaking(item: NewsItem): boolean {
+  const now = Date.now();
+  const articleTime = new Date(item.pubDate).getTime();
+  const isRecent = now - articleTime < BREAKING_TIME_THRESHOLD_MS;
+
+  if (!isRecent) return false;
+
+  // 제목에 속보 키워드가 포함된 경우
+  // Title contains breaking keywords
+  if (BREAKING_KEYWORDS.test(item.title)) return true;
+
+  // 제목에 ±3% 이상 변동률 언급이 있는 경우
+  // Title mentions ±3% or larger change percent
+  const match = item.title.match(LARGE_CHANGE_PATTERN);
+  if (match) {
+    const percent = Math.abs(parseFloat(match[0].replace("%", "")));
+    if (percent >= MIN_CHANGE_PERCENT) return true;
+  }
+
+  return false;
+}
+
 // 스팸/광고성 콘텐츠 필터
 function isSpam(title: string): boolean {
   return /무료\s*상담|지금\s*신청|이벤트\s*참여|광고|제휴|sponsored|ad\b|promotion/i.test(title);
@@ -190,6 +230,12 @@ export async function fetchNewsByCategory(
 
   const unique = deduplicateByTitle(allItems);
   const sliced = unique.slice(0, limit);
+
+  // 속보 감지 적용
+  // Apply breaking news detection
+  for (const item of sliced) {
+    item.isBreaking = detectBreaking(item);
+  }
 
   // 캐시에 저장
   // Store in cache

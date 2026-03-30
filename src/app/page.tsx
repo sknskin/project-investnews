@@ -1,6 +1,7 @@
 import { fetchAllCategories } from "@/lib/rss";
-import { Category } from "@/types";
+import { Category, NewsItem } from "@/types";
 import CategorySection from "@/components/news/CategorySection";
+import BreakingBanner from "@/components/news/BreakingBanner";
 
 export const revalidate = 60;
 
@@ -13,8 +14,15 @@ const CATEGORY_ORDER: Category[] = [
 export default async function HomePage() {
   const data = await fetchAllCategories(6);
 
+  // 전체 카테고리 뉴스를 모아 속보 배너에 전달
+  // Gather all category items for breaking banner
+  const allItems: NewsItem[] = Object.values(data).flat();
+
   return (
     <div className="space-y-10">
+      {/* 속보 배너 / Breaking news banner */}
+      <BreakingBanner items={allItems} />
+
       {/* Hero */}
       <div className="text-center py-4">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">

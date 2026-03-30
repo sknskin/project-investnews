@@ -7,6 +7,7 @@ export interface NewsItem {
   source: string;
   pubDate: string;
   category: Category;
+  isBreaking?: boolean;
 }
 
 export interface FeedSource {
