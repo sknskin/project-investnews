@@ -1,7 +1,12 @@
 import { fetchMarketIndices, getGroupedIndices, getOrderedGroups, getGroupIcon } from "@/lib/market";
 import type { MarketIndex } from "@/lib/market";
 import MarketAnalysis from "@/components/market/MarketAnalysis";
+import FearGreedGauge from "@/components/market/FearGreedGauge";
+import MarketStatus from "@/components/market/MarketStatus";
 import SummaryClient from "@/components/market/SummaryClient";
+import CurrencyConverter from "@/components/market/CurrencyConverter";
+import EconomicCalendar from "@/components/market/EconomicCalendar";
+import SectorHeatmap from "@/components/market/SectorHeatmap";
 
 export const revalidate = 60;
 
@@ -25,9 +30,26 @@ export default async function SummaryPage() {
         <p className="text-sm text-muted-foreground/50 pl-0 sm:pl-10">
           주요 시장 지수 · 실시간 업데이트
         </p>
+        <div className="mt-3">
+          <MarketStatus />
+        </div>
       </div>
 
-      {indices.length > 0 && <MarketAnalysis indices={indices} />}
+      {indices.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 mb-6">
+          <MarketAnalysis indices={indices} />
+          <FearGreedGauge indices={indices} />
+        </div>
+      )}
+
+      {/* 섹터 히트맵 + 환율 계산기 + 경제 캘린더 / Sector heatmap + Currency converter + Calendar */}
+      {indices.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <SectorHeatmap indices={indices} />
+          <CurrencyConverter indices={indices} />
+          <EconomicCalendar />
+        </div>
+      )}
 
       {indices.length === 0 ? (
         <div className="text-center py-20">
