@@ -4,6 +4,37 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Category, NewsItem } from "@/types";
 
+// 강조 대상 지수/종목명 키워드
+// Index/ticker name keywords for highlighting
+const HIGHLIGHT_TICKERS = [
+  "나스닥", "S&P", "코스피", "코스닥", "다우", "비트코인", "이더리움",
+  "NASDAQ", "KOSPI", "KOSDAQ", "BTC", "ETH", "금", "원유", "VIX", "달러", "엔화", "유로",
+];
+
+/**
+ * 분석 텍스트에서 숫자/퍼센트와 주요 지수명을 강조 처리
+ * Highlight numbers/percentages and major index names in analysis text
+ */
+function highlightAnalysis(text: string): string {
+  // 숫자/퍼센트 강조
+  // Highlight numbers/percentages
+  let result = text.replace(
+    /([+-]?\d+\.?\d*%)/g,
+    '<span class="text-blue-400 font-semibold">$1</span>'
+  );
+
+  // 지수/종목명 강조
+  // Highlight index/ticker names
+  for (const ticker of HIGHLIGHT_TICKERS) {
+    result = result.replace(
+      new RegExp(`(${ticker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "g"),
+      '<strong class="text-foreground">$1</strong>'
+    );
+  }
+
+  return result;
+}
+
 function AnalysisContent({ text }: { text: string }) {
   const lines = text.split("\n");
   let lineKey = 0;
@@ -22,21 +53,21 @@ function AnalysisContent({ text }: { text: string }) {
             <h3
               key={k}
               className="text-base font-bold text-foreground pt-4 pb-1 first:pt-0 flex items-center gap-2"
-            >
-              {trimmed.replace("## ", "")}
-            </h3>
+              dangerouslySetInnerHTML={{ __html: highlightAnalysis(trimmed.replace("## ", "")) }}
+            />
           );
         }
 
         // **bold** content
         if (trimmed.startsWith("**") && trimmed.includes("**:")) {
           const [label, ...rest] = trimmed.split("**:");
+          const restText = rest.join("**:");
           return (
             <p key={k} className="text-muted-foreground pl-1">
               <span className="font-semibold text-foreground/80">
                 {label.replace(/\*\*/g, "")}:
               </span>
-              {rest.join("**:")}
+              <span dangerouslySetInnerHTML={{ __html: highlightAnalysis(restText) }} />
             </p>
           );
         }
@@ -46,7 +77,7 @@ function AnalysisContent({ text }: { text: string }) {
           return (
             <div key={k} className="flex gap-2 pl-1 text-muted-foreground">
               <span className="text-blue-400/60 mt-0.5 shrink-0">•</span>
-              <span>{trimmed.slice(2)}</span>
+              <span dangerouslySetInnerHTML={{ __html: highlightAnalysis(trimmed.slice(2)) }} />
             </div>
           );
         }
@@ -58,15 +89,17 @@ function AnalysisContent({ text }: { text: string }) {
               <span className="text-blue-400/60 mt-0.5 shrink-0 text-[13px] font-mono">
                 {trimmed.match(/^\d+/)?.[0]}.
               </span>
-              <span>{trimmed.replace(/^\d+\.\s*/, "")}</span>
+              <span dangerouslySetInnerHTML={{ __html: highlightAnalysis(trimmed.replace(/^\d+\.\s*/, "")) }} />
             </div>
           );
         }
 
         return (
-          <p key={k} className="text-muted-foreground">
-            {trimmed}
-          </p>
+          <p
+            key={k}
+            className="text-muted-foreground"
+            dangerouslySetInnerHTML={{ __html: highlightAnalysis(trimmed) }}
+          />
         );
       })}
     </div>
