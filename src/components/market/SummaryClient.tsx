@@ -6,6 +6,21 @@ import { getGroupIcon } from "@/lib/market";
 import { cn } from "@/lib/utils";
 import IndexDetailModal, { getCurrencyPrefix, getCurrencySuffix } from "./IndexDetailModal";
 
+// 히트맵 배경색 기준값 (%)
+// Heatmap background threshold (%)
+const HEATMAP_STRONG_THRESHOLD = 2;
+const HEATMAP_MODERATE_THRESHOLD = 0.5;
+
+// 변동률 기반 히트맵 배경색 반환
+// Return heatmap background color based on change percent
+function getHeatBg(changePercent: number): string {
+  if (changePercent > HEATMAP_STRONG_THRESHOLD) return "bg-red-500/10";
+  if (changePercent > HEATMAP_MODERATE_THRESHOLD) return "bg-red-500/5";
+  if (changePercent < -HEATMAP_STRONG_THRESHOLD) return "bg-blue-500/10";
+  if (changePercent < -HEATMAP_MODERATE_THRESHOLD) return "bg-blue-500/5";
+  return "";
+}
+
 function formatPrice(price: number, symbol: string): string {
   if (symbol.includes("=X") || symbol.includes("JPY")) {
     return price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -27,7 +42,10 @@ function IndexCard({ idx, onClick }: { idx: MarketIndex; onClick: () => void }) 
     <button
       type="button"
       onClick={onClick}
-      className="group relative rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm p-4 hover:border-border/60 hover:bg-card/80 transition-all duration-200 cursor-pointer text-left w-full focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:ring-offset-1 focus:ring-offset-transparent"
+      className={cn(
+        "group relative rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm p-4 hover:border-border/60 hover:bg-card/80 transition-all duration-200 cursor-pointer text-left w-full focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:ring-offset-1 focus:ring-offset-transparent",
+        getHeatBg(idx.changePercent)
+      )}
     >
       {/* 상승/하락 인디케이터 바 */}
       <div
