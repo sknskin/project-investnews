@@ -1,0 +1,13 @@
+{
+  "name": "InvestNews",
+  "short_name": "InvestNews",
+  "description": "투자용 경제/정치 뉴스 — AI 분석 포함",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#3b82f6",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
