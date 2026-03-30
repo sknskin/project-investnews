@@ -32,6 +32,10 @@ const MARKET_INDICES = [
   { symbol: "NQ=F", name: "NASDAQ 100 Futures", nameKo: "나스닥 100 선물", group: "선물" },
   { symbol: "ES=F", name: "S&P 500 Futures", nameKo: "S&P 500 선물", group: "선물" },
   { symbol: "YM=F", name: "Dow Jones Futures", nameKo: "다우존스 선물", group: "선물" },
+  // 러셀 2000 및 닛케이 선물 — 소형주 및 아시아 시장 방향성 참고
+  // Russell 2000 & Nikkei futures — small-cap and Asian market direction
+  { symbol: "RTY=F", name: "Russell 2000 Futures", nameKo: "러셀 2000 선물", group: "선물" },
+  { symbol: "NK=F", name: "Nikkei 225 Futures", nameKo: "닛케이 225 선물", group: "선물" },
 
   // 한국 지수
   { symbol: "^KS11", name: "KOSPI", nameKo: "코스피", group: "한국 지수" },
