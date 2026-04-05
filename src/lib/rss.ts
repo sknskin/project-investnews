@@ -176,7 +176,10 @@ async function parseFeedWithRetry(
       }
 
       return items;
-    } catch {
+    } catch (error) {
+      // 피드 파싱 실패 로깅 — 재시도 또는 스킵
+      // Log feed parsing failure — retry or skip
+      console.warn(`[RSS] ${sourceName} attempt ${attempt + 1} failed:`, error instanceof Error ? error.message : error);
       if (attempt === 0) {
         await new Promise((r) => setTimeout(r, 500));
       }

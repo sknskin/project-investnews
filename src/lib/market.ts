@@ -86,37 +86,51 @@ async function fetchChartData(symbol: string): Promise<{ price: number; previous
       price: meta.regularMarketPrice,
       previousClose: meta.chartPreviousClose ?? meta.previousClose ?? meta.regularMarketPrice,
     };
-  } catch {
+  } catch (error) {
+    // Yahoo Finance API 호출 실패 로깅
+    // Log Yahoo Finance API fetch failure
+    console.warn(`[Market] ${symbol} fetch failed:`, error instanceof Error ? error.message : error);
     return null;
   }
 }
 
-export async function fetchMarketIndices(): Promise<MarketIndex[]> {
-  const results = await Promise.allSettled(
-    MARKET_INDICES.map(async (idx) => {
-      const data = await fetchChartData(idx.symbol);
-      if (!data || data.price === 0) return null;
-      const change = data.price - data.previousClose;
-      const changePercent = data.previousClose !== 0 ? (change / data.previousClose) * 100 : 0;
-      return {
-        symbol: idx.symbol,
-        name: idx.name,
-        nameKo: idx.nameKo,
-        group: idx.group,
-        price: data.price,
-        change,
-        changePercent,
-        previousClose: data.previousClose,
-      };
-    })
-  );
+// 배치 크기 — Yahoo Finance rate-limit 방지
+// Batch size — prevent Yahoo Finance rate-limiting
+const MARKET_BATCH_SIZE = 10;
 
+export async function fetchMarketIndices(): Promise<MarketIndex[]> {
   const indices: MarketIndex[] = [];
-  for (const r of results) {
-    if (r.status === "fulfilled" && r.value) {
-      indices.push(r.value);
+
+  // 배치로 나눠서 동시 요청 수 제한
+  // Batch requests to limit concurrent calls
+  for (let i = 0; i < MARKET_INDICES.length; i += MARKET_BATCH_SIZE) {
+    const batch = MARKET_INDICES.slice(i, i + MARKET_BATCH_SIZE);
+    const results = await Promise.allSettled(
+      batch.map(async (idx) => {
+        const data = await fetchChartData(idx.symbol);
+        if (!data || data.price === 0) return null;
+        const change = data.price - data.previousClose;
+        const changePercent = data.previousClose !== 0 ? (change / data.previousClose) * 100 : 0;
+        return {
+          symbol: idx.symbol,
+          name: idx.name,
+          nameKo: idx.nameKo,
+          group: idx.group,
+          price: data.price,
+          change,
+          changePercent,
+          previousClose: data.previousClose,
+        };
+      })
+    );
+
+    for (const r of results) {
+      if (r.status === "fulfilled" && r.value) {
+        indices.push(r.value);
+      }
     }
   }
+
   return indices;
 }
 
