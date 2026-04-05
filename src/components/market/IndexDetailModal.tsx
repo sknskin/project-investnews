@@ -2,41 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import type { MarketIndex } from "@/lib/market";
+import { getCurrencyPrefix, getCurrencySuffix, formatPrice } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import PriceChart from "./PriceChart";
-
-/** 지수별 통화 접두사 */
-function getCurrencyPrefix(symbol: string): string {
-  // 원화 표시
-  if (symbol === "KRW=X") return "₩";
-  // 채권 금리 (%)
-  if (symbol.startsWith("^TNX") || symbol.startsWith("^TYX")) return "";
-  // VIX (포인트)
-  if (symbol === "^VIX") return "";
-  // 환율 (무단위)
-  if (symbol.includes("=X") || symbol.includes("JPY")) return "";
-  // 달러 표시 (원자재, 암호화폐, 미국 지수, 선물)
-  return "$";
-}
-
-/** 지수별 단위 접미사 */
-function getCurrencySuffix(symbol: string): string {
-  if (symbol.startsWith("^TNX") || symbol.startsWith("^TYX")) return "%";
-  if (symbol === "^VIX") return "pt";
-  if (symbol === "KRW=X") return "";
-  if (symbol.includes("=X") || symbol.includes("JPY")) return "";
-  return "";
-}
-
-function formatPrice(price: number, symbol: string): string {
-  if (symbol.includes("=X") || symbol.includes("JPY")) {
-    return price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
-  if (symbol.startsWith("^TNX") || symbol.startsWith("^TYX")) {
-    return price.toFixed(3);
-  }
-  return price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
 
 /** 지수 설명 데이터 */
 const INDEX_DESCRIPTIONS: Record<string, { desc: string; detail: string }> = {
@@ -141,16 +109,43 @@ interface IndexDetailModalProps {
 
 export default function IndexDetailModal({ idx, onClose }: IndexDetailModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!idx) return;
+
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
+
+      // 포커스 트랩 — Tab 키로 모달 외부 이동 방지
+      // Focus trap — prevent Tab from leaving modal
+      if (e.key === "Tab" && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
+
     document.addEventListener("keydown", handleKey);
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = "hidden";
     document.body.style.paddingRight = `${scrollbarWidth}px`;
+
+    // 모달 열리면 닫기 버튼에 포커스
+    // Focus close button when modal opens
+    const closeBtn = modalRef.current?.querySelector<HTMLElement>("button[aria-label]");
+    closeBtn?.focus();
+
     return () => {
       document.removeEventListener("keydown", handleKey);
       document.body.style.overflow = "";
@@ -175,7 +170,7 @@ export default function IndexDetailModal({ idx, onClose }: IndexDetailModalProps
       aria-modal="true"
       aria-labelledby="index-detail-title"
     >
-      <div className="relative w-full max-w-2xl lg:max-w-4xl rounded-2xl border border-border/40 bg-card p-4 sm:p-6 lg:p-8 shadow-2xl max-h-[95vh] overflow-y-auto">
+      <div ref={modalRef} className="relative w-full max-w-2xl lg:max-w-4xl rounded-2xl border border-border/40 bg-card p-4 sm:p-6 lg:p-8 shadow-2xl max-h-[95vh] overflow-y-auto">
         {/* 닫기 버튼 */}
         <button
           onClick={onClose}
@@ -257,4 +252,3 @@ export default function IndexDetailModal({ idx, onClose }: IndexDetailModalProps
   );
 }
 
-export { getCurrencyPrefix, getCurrencySuffix };

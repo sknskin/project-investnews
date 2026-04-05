@@ -3,8 +3,9 @@
 import { useState, useCallback } from "react";
 import type { MarketIndex } from "@/lib/market";
 import { getGroupIcon } from "@/lib/market";
+import { getCurrencyPrefix, getCurrencySuffix, formatPrice } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import IndexDetailModal, { getCurrencyPrefix, getCurrencySuffix } from "./IndexDetailModal";
+import IndexDetailModal from "./IndexDetailModal";
 
 // 히트맵 배경색 기준값 (%)
 // Heatmap background threshold (%)
@@ -19,16 +20,6 @@ function getHeatBg(changePercent: number): string {
   if (changePercent < -HEATMAP_STRONG_THRESHOLD) return "bg-blue-500/10";
   if (changePercent < -HEATMAP_MODERATE_THRESHOLD) return "bg-blue-500/5";
   return "";
-}
-
-function formatPrice(price: number, symbol: string): string {
-  if (symbol.includes("=X") || symbol.includes("JPY")) {
-    return price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
-  if (symbol.startsWith("^TNX") || symbol.startsWith("^TYX")) {
-    return price.toFixed(3);
-  }
-  return price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function IndexCard({ idx, onClick }: { idx: MarketIndex; onClick: () => void }) {
