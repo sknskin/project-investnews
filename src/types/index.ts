@@ -23,3 +23,7 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   international: "해외뉴스",
   crypto: "코인뉴스",
 };
+
+// 유효한 카테고리 목록 — API 라우트 검증용
+// Valid categories — for API route validation
+export const VALID_CATEGORIES = Object.keys(CATEGORY_LABELS) as Category[];

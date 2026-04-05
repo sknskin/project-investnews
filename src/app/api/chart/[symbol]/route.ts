@@ -23,6 +23,16 @@ export async function GET(
     const { symbol } = await params;
     const decodedSymbol = decodeURIComponent(symbol);
 
+    // 심볼 패턴 검증 — 허용된 형식만 통과 (SSRF 방지)
+    // Symbol pattern validation — only allow known formats (prevent SSRF)
+    const SYMBOL_PATTERN = /^[A-Z0-9\^=\-\.]{1,20}$/;
+    if (!SYMBOL_PATTERN.test(decodedSymbol)) {
+      return NextResponse.json(
+        { error: "유효하지 않은 심볼 형식입니다" },
+        { status: 400 }
+      );
+    }
+
     // Yahoo Finance 차트 API 호출 (2일간 15분 간격)
     // Fetch 2-day chart data with 15-minute intervals
     const url = `${YAHOO_CHART_URL}/${encodeURIComponent(decodedSymbol)}?range=2d&interval=15m`;
@@ -72,7 +82,9 @@ export async function GET(
       }
     );
   } catch (err) {
-    const message = err instanceof Error ? err.message : "알 수 없는 오류";
-    return NextResponse.json({ error: message }, { status: 500 });
+    // 내부 에러 상세를 클라이언트에 노출하지 않음
+    // Do not expose internal error details to client
+    console.error("[Chart API] error:", err instanceof Error ? err.message : err);
+    return NextResponse.json({ error: "차트 데이터를 가져오는데 실패했습니다" }, { status: 500 });
   }
 }

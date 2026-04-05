@@ -1,12 +1,6 @@
 import { NextResponse } from "next/server";
 import { fetchNewsByCategory } from "@/lib/rss";
-import { Category } from "@/types";
-
-const VALID_CATEGORIES: Category[] = [
-  "domestic",
-  "international",
-  "crypto",
-];
+import { Category, VALID_CATEGORIES } from "@/types";
 
 export async function GET(
   _request: Request,
@@ -27,8 +21,9 @@ export async function GET(
       },
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "뉴스 조회 실패";
-    console.error(`[News API] ${category} error:`, message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    // 내부 에러 상세를 클라이언트에 노출하지 않음
+    // Do not expose internal error details to client
+    console.error(`[News API] ${category} error:`, err instanceof Error ? err.message : err);
+    return NextResponse.json({ error: "뉴스를 불러오는데 실패했습니다" }, { status: 500 });
   }
 }

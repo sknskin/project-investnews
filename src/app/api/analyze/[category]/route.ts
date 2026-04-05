@@ -1,14 +1,9 @@
 import { NextResponse } from "next/server";
 import { analyzeHeadlines } from "@/lib/ai";
-import { Category } from "@/types";
+import { Category, VALID_CATEGORIES } from "@/types";
+import { djb2Hash } from "@/lib/hash";
 
 export const maxDuration = 60;
-
-const VALID_CATEGORIES: Category[] = [
-  "domestic",
-  "international",
-  "crypto",
-];
 
 // 인메모리 캐시 (카테고리+headlines 해시 기반)
 // In-memory cache (category + headlines hash based)
@@ -29,17 +24,6 @@ function cleanExpiredCache() {
       analysisCache.delete(key);
     }
   }
-}
-
-// headlines 기반 간단한 해시 생성
-// Generate simple hash from headlines
-function hashHeadlines(headlines: { title: string }[]): string {
-  const str = headlines.map((h) => h.title).join("|");
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
-  }
-  return hash.toString(36);
 }
 
 export async function POST(
@@ -81,7 +65,7 @@ export async function POST(
 
     // 캐시 키: 카테고리 + headlines 해시
     // Cache key: category + headlines hash
-    const cacheKey = `${category}:${hashHeadlines(validHeadlines)}`;
+    const cacheKey = `${category}:${djb2Hash(validHeadlines.map((h) => h.title).join("|"))}`;
     const cached = analysisCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
       return NextResponse.json({ analysis: cached.result, cached: true });
@@ -99,9 +83,9 @@ export async function POST(
 
     return NextResponse.json({ analysis, cached: false });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Analysis failed";
-    console.error(`[Analyze API] ${category} error:`, message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    // 내부 에러 상세를 클라이언트에 노출하지 않음
+    // Do not expose internal error details to client
+    console.error(`[Analyze API] ${category} error:`, error instanceof Error ? error.message : error);
+    return NextResponse.json({ error: "AI 분석에 실패했습니다. 잠시 후 다시 시도해주세요." }, { status: 500 });
   }
 }

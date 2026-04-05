@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { analyzeMarketIndices } from "@/lib/ai-market";
+import { djb2Hash } from "@/lib/hash";
 
 export const maxDuration = 60;
 
@@ -8,16 +9,17 @@ export const maxDuration = 60;
 const cache = new Map<string, { result: string; timestamp: number }>();
 const CACHE_TTL = 3 * 60 * 1000; // 3분 — 시장 변동 반영을 위해 단축
 // 3 minutes — shortened to reflect market changes
+const MAX_CACHE_SIZE = 50;
 
-// indices 기반 간단한 해시 생성
-// Generate simple hash from indices
-function hashIndices(indices: { name: string; price: number }[]): string {
-  const str = indices.map((i) => `${i.name}:${i.price}`).join("|");
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
+// 만료된 캐시 엔트리 정리
+// Clean up expired cache entries
+function cleanExpiredCache() {
+  const now = Date.now();
+  for (const [key, entry] of cache) {
+    if (now - entry.timestamp > CACHE_TTL) {
+      cache.delete(key);
+    }
   }
-  return hash.toString(36);
 }
 
 export async function POST(request: Request) {
@@ -50,19 +52,27 @@ export async function POST(request: Request) {
 
     // 캐시 키: indices 해시 기반
     // Cache key: based on indices hash
-    const cacheKey = `market:${hashIndices(validIndices)}`;
+    const cacheKey = `market:${djb2Hash(validIndices.map((i) => `${i.name}:${i.price}`).join("|"))}`;
     const cached = cache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
       return NextResponse.json({ analysis: cached.result, cached: true });
     }
 
     const analysis = await analyzeMarketIndices(validIndices);
+
+    // 캐시 크기 제한 — 오래된 엔트리 정리
+    // Cache size limit — clean up old entries
+    if (cache.size >= MAX_CACHE_SIZE) {
+      cleanExpiredCache();
+    }
+
     cache.set(cacheKey, { result: analysis, timestamp: Date.now() });
 
     return NextResponse.json({ analysis, cached: false });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Analysis failed";
-    console.error("[Analyze Market API] error:", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    // 내부 에러 상세를 클라이언트에 노출하지 않음
+    // Do not expose internal error details to client
+    console.error("[Analyze Market API] error:", error instanceof Error ? error.message : error);
+    return NextResponse.json({ error: "시장 분석에 실패했습니다. 잠시 후 다시 시도해주세요." }, { status: 500 });
   }
 }
