@@ -7,7 +7,12 @@ export default function ShareButton({ title, text, url }: { title: string; text?
 
   // 공유 또는 클립보드 복사 처리
   // Handle share or clipboard copy
-  const handleShare = async () => {
+  const handleShare = async (e: React.MouseEvent) => {
+    // 이벤트 전파 차단 — 부모 링크 클릭 방지
+    // Stop event propagation — prevent parent link click
+    e.preventDefault();
+    e.stopPropagation();
+
     const shareUrl = url || window.location.href;
 
     if (navigator.share) {
@@ -18,9 +23,15 @@ export default function ShareButton({ title, text, url }: { title: string; text?
         // User cancelled sharing
       }
     } else {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        // 클립보드 접근 실패 (HTTP 환경 등)
+        // Clipboard access failed (e.g. non-HTTPS)
+        console.warn("[ShareButton] clipboard write failed:", err instanceof Error ? err.message : err);
+      }
     }
   };
 

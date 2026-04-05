@@ -18,9 +18,11 @@ export default function BreakingBanner({ items }: { items: NewsItem[] }) {
         <span className="shrink-0 px-2 py-0.5 text-[11px] font-bold rounded-full bg-red-500/20 text-red-400 animate-pulse">
           🚨 속보
         </span>
+        {/* 마키 콘텐츠 2벌 복제 — 끊김 없는 무한 루프 */}
+        {/* Duplicate marquee content — seamless infinite loop */}
         <div className="overflow-hidden flex-1">
           <div className="flex gap-6 animate-marquee whitespace-nowrap">
-            {breaking.map((item, i) => (
+            {[...breaking, ...breaking].map((item, i) => (
               <a
                 key={i}
                 href={item.link}

@@ -174,3 +174,13 @@
 .animate-marquee {
   animation: marquee 30s linear infinite;
 }
+/* 모션 축소 선호 사용자 — 애니메이션 비활성화 */
+/* Respect reduced motion preference — disable animations */
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+  .animate-fade-in-up {
+    animation: none;
+  }
+}
