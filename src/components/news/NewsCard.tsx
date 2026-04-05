@@ -34,6 +34,10 @@ function getIndexTags(title: string): { tag: string; color: string }[] {
 }
 
 export default function NewsCard({ item }: { item: NewsItem }) {
+  // 관련 지수 태그를 미리 계산 — IIFE 대신 변수로 추출
+  // Pre-calculate related index tags — extract to variable instead of IIFE
+  const indexTags = getIndexTags(item.title);
+
   return (
     <a
       href={item.link}
@@ -68,19 +72,15 @@ export default function NewsCard({ item }: { item: NewsItem }) {
         </h3>
 
         {/* 관련 지수 태그 / Related index tags */}
-        {(() => {
-          const tags = getIndexTags(item.title);
-          if (tags.length === 0) return null;
-          return (
-            <div className="flex gap-1 mt-1.5">
-              {tags.map(t => (
-                <span key={t.tag} className={`text-[9px] px-1.5 py-0.5 rounded-full border border-current/20 font-medium ${t.color}`}>
-                  {t.tag}
-                </span>
-              ))}
-            </div>
-          );
-        })()}
+        {indexTags.length > 0 && (
+          <div className="flex gap-1 mt-1.5">
+            {indexTags.map(t => (
+              <span key={t.tag} className={`text-[9px] px-1.5 py-0.5 rounded-full border border-current/20 font-medium ${t.color}`}>
+                {t.tag}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Snippet */}
         {item.snippet && (
