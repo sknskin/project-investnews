@@ -7,6 +7,8 @@ import SummaryClient from "@/components/market/SummaryClient";
 import CurrencyConverter from "@/components/market/CurrencyConverter";
 import EconomicCalendar from "@/components/market/EconomicCalendar";
 import SectorHeatmap from "@/components/market/SectorHeatmap";
+import MarketMovers from "@/components/market/MarketMovers";
+import KeyMetrics from "@/components/market/KeyMetrics";
 
 export const revalidate = 60;
 
@@ -26,6 +28,13 @@ export default async function SummaryPage() {
         <div className="flex items-center gap-3 mb-1">
           <span className="text-2xl">📋</span>
           <h1 className="text-2xl font-bold tracking-tight">시장 지수</h1>
+          {/* AI 분석 버튼 — 헤더 우측 상단 배치 */}
+          {/* AI analysis button — positioned at top-right of header */}
+          {indices.length > 0 && (
+            <div className="ml-auto">
+              <MarketAnalysis indices={indices} />
+            </div>
+          )}
         </div>
         <p className="text-sm text-muted-foreground/50 pl-0 sm:pl-10">
           주요 시장 지수 · 실시간 업데이트
@@ -35,19 +44,21 @@ export default async function SummaryPage() {
         </div>
       </div>
 
+      {/* 위젯 그리드 — 공포/탐욕 + 섹터 히트맵 + 경제 캘린더 / Widget grid */}
       {indices.length > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 mb-6">
-          <MarketAnalysis indices={indices} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
           <FearGreedGauge indices={indices} />
+          <SectorHeatmap indices={indices} />
+          <EconomicCalendar />
         </div>
       )}
 
-      {/* 섹터 히트맵 + 환율 계산기 + 경제 캘린더 / Sector heatmap + Currency converter + Calendar */}
+      {/* 환율 계산기 + 급등/급락 + 핵심 지표 / Converter + Movers + Key Metrics */}
       {indices.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          <SectorHeatmap indices={indices} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
           <CurrencyConverter indices={indices} />
-          <EconomicCalendar />
+          <MarketMovers indices={indices} />
+          <KeyMetrics indices={indices} />
         </div>
       )}
 
