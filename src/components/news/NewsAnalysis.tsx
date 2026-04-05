@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { Sparkles, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Category, NewsItem } from "@/types";
+import AnalysisContent from "@/components/common/AnalysisContent";
 
 // 강조 대상 지수/종목명 키워드
 // Index/ticker name keywords for highlighting
@@ -12,13 +14,30 @@ const HIGHLIGHT_TICKERS = [
 ];
 
 /**
+ * HTML 특수문자 이스케이프 — XSS 방지
+ * Escape HTML special characters — prevent XSS
+ */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+/**
  * 분석 텍스트에서 숫자/퍼센트와 주요 지수명을 강조 처리
  * Highlight numbers/percentages and major index names in analysis text
  */
 function highlightAnalysis(text: string): string {
+  // HTML 이스케이프 먼저 적용 — XSS 방지
+  // Apply HTML escape first — prevent XSS
+  let result = escapeHtml(text);
+
   // 숫자/퍼센트 강조
   // Highlight numbers/percentages
-  let result = text.replace(
+  result = result.replace(
     /([+-]?\d+\.?\d*%)/g,
     '<span class="text-blue-400 font-semibold">$1</span>'
   );
@@ -35,76 +54,6 @@ function highlightAnalysis(text: string): string {
   return result;
 }
 
-function AnalysisContent({ text }: { text: string }) {
-  const lines = text.split("\n");
-  let lineKey = 0;
-
-  return (
-    <div className="space-y-1.5 text-[13px] sm:text-[15px] leading-relaxed">
-      {lines.map((line) => {
-        const trimmed = line.trim();
-        if (!trimmed) return null;
-
-        const k = `l-${lineKey++}`;
-
-        // ## Heading
-        if (trimmed.startsWith("## ")) {
-          return (
-            <h3
-              key={k}
-              className="text-base font-bold text-foreground pt-4 pb-1 first:pt-0 flex items-center gap-2"
-              dangerouslySetInnerHTML={{ __html: highlightAnalysis(trimmed.replace("## ", "")) }}
-            />
-          );
-        }
-
-        // **bold** content
-        if (trimmed.startsWith("**") && trimmed.includes("**:")) {
-          const [label, ...rest] = trimmed.split("**:");
-          const restText = rest.join("**:");
-          return (
-            <p key={k} className="text-muted-foreground pl-1">
-              <span className="font-semibold text-foreground/80">
-                {label.replace(/\*\*/g, "")}:
-              </span>
-              <span dangerouslySetInnerHTML={{ __html: highlightAnalysis(restText) }} />
-            </p>
-          );
-        }
-
-        // - Bullet points
-        if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
-          return (
-            <div key={k} className="flex gap-2 pl-1 text-muted-foreground">
-              <span className="text-blue-400/60 mt-0.5 shrink-0">•</span>
-              <span dangerouslySetInnerHTML={{ __html: highlightAnalysis(trimmed.slice(2)) }} />
-            </div>
-          );
-        }
-
-        // Numbered list
-        if (/^\d+\.\s/.test(trimmed)) {
-          return (
-            <div key={k} className="flex gap-2 pl-1 text-muted-foreground">
-              <span className="text-blue-400/60 mt-0.5 shrink-0 text-[13px] font-mono">
-                {trimmed.match(/^\d+/)?.[0]}.
-              </span>
-              <span dangerouslySetInnerHTML={{ __html: highlightAnalysis(trimmed.replace(/^\d+\.\s*/, "")) }} />
-            </div>
-          );
-        }
-
-        return (
-          <p
-            key={k}
-            className="text-muted-foreground"
-            dangerouslySetInnerHTML={{ __html: highlightAnalysis(trimmed) }}
-          />
-        );
-      })}
-    </div>
-  );
-}
 
 export default function NewsAnalysis({ category, items }: { category: Category; items: NewsItem[] }) {
   const [analysis, setAnalysis] = useState<string | null>(null);
@@ -149,9 +98,7 @@ export default function NewsAnalysis({ category, items }: { category: Category; 
           variant="outline"
           className="h-10 gap-2.5 border-blue-500/20 bg-blue-500/5 text-blue-600 dark:text-blue-300 hover:bg-blue-500/10 hover:text-blue-500 dark:hover:text-blue-200 hover:border-blue-500/30 transition-all"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
-          </svg>
+          <Sparkles className="w-4 h-4" />
           AI 뉴스 분석
         </Button>
       )}
@@ -203,9 +150,7 @@ export default function NewsAnalysis({ category, items }: { category: Category; 
           <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/30">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-md bg-gradient-to-br from-blue-500/30 to-violet-500/30 flex items-center justify-center">
-                <svg className="w-3.5 h-3.5 text-blue-500 dark:text-blue-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
-                </svg>
+                <Sparkles className="w-3.5 h-3.5 text-blue-500 dark:text-blue-300" />
               </div>
               <span className="text-[13px] font-semibold text-foreground/80">AI 분석 리포트</span>
             </div>
@@ -215,15 +160,13 @@ export default function NewsAnalysis({ category, items }: { category: Category; 
               size="sm"
               className="h-7 text-[11px] text-muted-foreground/50 hover:text-foreground/70 gap-1 px-2"
             >
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182" />
-              </svg>
+              <RefreshCw className="w-3 h-3" />
               새로고침
             </Button>
           </div>
 
           {/* Body */}
-          <AnalysisContent text={analysis} />
+          <AnalysisContent text={analysis} highlightFn={highlightAnalysis} />
         </div>
       )}
     </div>

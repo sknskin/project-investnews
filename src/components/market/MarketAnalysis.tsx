@@ -1,68 +1,26 @@
 "use client";
 
 import { useState } from "react";
+import { Sparkles, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import type { MarketIndex } from "@/lib/market";
-
-function AnalysisContent({ text }: { text: string }) {
-  const lines = text.split("\n");
-  let lineKey = 0;
-
-  return (
-    <div className="space-y-1.5 text-[13px] sm:text-[15px] leading-relaxed">
-      {lines.map((line) => {
-        const trimmed = line.trim();
-        if (!trimmed) return null;
-
-        const k = `l-${lineKey++}`;
-
-        if (trimmed.startsWith("## ")) {
-          return (
-            <h3 key={k} className="text-base font-bold text-foreground pt-4 pb-1 first:pt-0 flex items-center gap-2">
-              {trimmed.replace("## ", "")}
-            </h3>
-          );
-        }
-
-        if (trimmed.startsWith("**") && trimmed.includes("**:")) {
-          const [label, ...rest] = trimmed.split("**:");
-          return (
-            <p key={k} className="text-muted-foreground pl-1">
-              <span className="font-semibold text-foreground/80">{label.replace(/\*\*/g, "")}:</span>
-              {rest.join("**:")}
-            </p>
-          );
-        }
-
-        if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
-          return (
-            <div key={k} className="flex gap-2 pl-1 text-muted-foreground">
-              <span className="text-blue-400/60 mt-0.5 shrink-0">•</span>
-              <span>{trimmed.slice(2)}</span>
-            </div>
-          );
-        }
-
-        if (/^\d+\.\s/.test(trimmed)) {
-          return (
-            <div key={k} className="flex gap-2 pl-1 text-muted-foreground">
-              <span className="text-blue-400/60 mt-0.5 shrink-0 text-[13px] font-mono">{trimmed.match(/^\d+/)?.[0]}.</span>
-              <span>{trimmed.replace(/^\d+\.\s*/, "")}</span>
-            </div>
-          );
-        }
-
-        return <p key={k} className="text-muted-foreground">{trimmed}</p>;
-      })}
-    </div>
-  );
-}
+import AnalysisContent from "@/components/common/AnalysisContent";
 
 export default function MarketAnalysis({ indices }: { indices: MarketIndex[] }) {
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
 
+  // AI 분석 API 호출
+  // Fetch AI market analysis from API
   const handleAnalyze = async () => {
     setLoading(true);
     setError(null);
@@ -96,85 +54,111 @@ export default function MarketAnalysis({ indices }: { indices: MarketIndex[] }) 
     }
   };
 
+  // 모달 열기 및 분석 자동 시작
+  // Open modal and auto-start analysis if not loaded
+  const handleOpenModal = () => {
+    setOpen(true);
+    if (!analysis && !loading && !error) {
+      handleAnalyze();
+    }
+  };
+
   return (
-    <div className="mb-8">
-      {!analysis && !loading && !error && (
-        <Button
-          onClick={handleAnalyze}
-          variant="outline"
-          className="h-10 gap-2.5 border-blue-500/20 bg-blue-500/5 text-blue-600 dark:text-blue-300 hover:bg-blue-500/10 hover:text-blue-500 dark:hover:text-blue-200 hover:border-blue-500/30 transition-all"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
-          </svg>
-          AI 시장 분석
-        </Button>
-      )}
+    <>
+      {/* AI 분석 트리거 버튼 — 항상 표시 */}
+      {/* AI analysis trigger button — always visible */}
+      <Button
+        onClick={handleOpenModal}
+        variant="outline"
+        size="sm"
+        className="gap-1.5 border-blue-500/20 bg-blue-500/5 text-blue-600 dark:text-blue-300 hover:bg-blue-500/10 hover:text-blue-500 dark:hover:text-blue-200 hover:border-blue-500/30 transition-all text-xs"
+      >
+        <Sparkles className="w-3.5 h-3.5" />
+        AI 시장 분석
+      </Button>
 
-      {loading && (
-        <div className="rounded-xl border border-blue-500/15 bg-blue-500/5 p-3 sm:p-5 animate-fade-in-up">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="w-8 h-8 rounded-full border-2 border-blue-500/20 border-t-blue-400 animate-spin" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-              </div>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-foreground/80">AI가 시장 지수를 분석하고 있습니다</p>
-              <p className="text-[11px] text-muted-foreground/50 mt-0.5">글로벌 지수 데이터를 종합 분석중...</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {error && (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 animate-fade-in-up">
-          <div className="flex items-start gap-3">
-            <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center shrink-0 mt-0.5">
-              <span className="text-red-400 text-xs">!</span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm text-red-300/90">{error}</p>
-              <Button
-                onClick={handleAnalyze}
-                variant="ghost"
-                size="sm"
-                className="mt-2 h-7 text-xs text-red-300/70 hover:text-red-200 hover:bg-red-500/10 px-2"
-              >
-                다시 시도
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {analysis && (
-        <div className="rounded-xl border border-blue-500/15 bg-gradient-to-b from-blue-500/5 to-transparent p-3 sm:p-5 animate-fade-in-up">
-          <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/30">
-            <div className="flex items-center gap-2">
+      {/* AI 분석 결과 모달 */}
+      {/* AI analysis result modal */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-md bg-gradient-to-br from-blue-500/30 to-violet-500/30 flex items-center justify-center">
-                <svg className="w-3.5 h-3.5 text-blue-500 dark:text-blue-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
-                </svg>
+                <Sparkles className="w-3.5 h-3.5 text-blue-500 dark:text-blue-300" />
               </div>
-              <span className="text-[13px] font-semibold text-foreground/80">AI 시장 분석 리포트</span>
-            </div>
-            <Button
-              onClick={handleAnalyze}
-              variant="ghost"
-              size="sm"
-              className="h-7 text-[11px] text-muted-foreground/50 hover:text-foreground/70 gap-1 px-2"
-            >
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182" />
-              </svg>
-              새로고침
-            </Button>
+              AI 시장 분석 리포트
+            </DialogTitle>
+            <DialogDescription>
+              AI가 현재 시장 지수를 종합 분석합니다
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* 스크롤 가능한 모달 본문 */}
+          {/* Scrollable modal body */}
+          <div className="flex-1 overflow-y-auto pr-1 -mr-1">
+            {/* 로딩 상태 */}
+            {/* Loading state */}
+            {loading && (
+              <div className="rounded-xl border border-blue-500/15 bg-blue-500/5 p-3 sm:p-5 animate-fade-in-up">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="w-8 h-8 rounded-full border-2 border-blue-500/20 border-t-blue-400 animate-spin" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground/80">AI가 시장 지수를 분석하고 있습니다</p>
+                    <p className="text-[11px] text-muted-foreground/50 mt-0.5">글로벌 지수 데이터를 종합 분석중...</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 에러 상태 */}
+            {/* Error state */}
+            {error && (
+              <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 animate-fade-in-up">
+                <div className="flex items-start gap-3">
+                  <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="text-red-400 text-xs">!</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-red-300/90">{error}</p>
+                    <Button
+                      onClick={handleAnalyze}
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2 h-7 text-xs text-red-300/70 hover:text-red-200 hover:bg-red-500/10 px-2"
+                    >
+                      다시 시도
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 분석 결과 */}
+            {/* Analysis result */}
+            {analysis && (
+              <div className="animate-fade-in-up">
+                <div className="flex items-center justify-end mb-3">
+                  <Button
+                    onClick={handleAnalyze}
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-[11px] text-muted-foreground/50 hover:text-foreground/70 gap-1 px-2"
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                    새로고침
+                  </Button>
+                </div>
+                <AnalysisContent text={analysis} />
+              </div>
+            )}
           </div>
-          <AnalysisContent text={analysis} />
-        </div>
-      )}
-    </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
