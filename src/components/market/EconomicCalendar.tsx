@@ -63,22 +63,29 @@ const MAX_DISPLAY_EVENTS = 6;
 export default function EconomicCalendar() {
   const today = new Date().toISOString().split("T")[0];
 
-  // 오늘 이후 이벤트만 필터링
-  // Only future events
-  const upcoming = EVENTS.filter((e) => e.date >= today).slice(
-    0,
-    MAX_DISPLAY_EVENTS
-  );
+  // 오늘 이후 이벤트 필터링 — 없으면 최근 완료 이벤트 표시
+  // Filter upcoming events — show recent past events if none upcoming
+  const upcoming = EVENTS.filter((e) => e.date >= today).slice(0, MAX_DISPLAY_EVENTS);
+  const isStale = upcoming.length === 0;
+  const displayEvents = isStale
+    ? EVENTS.slice(-MAX_DISPLAY_EVENTS)
+    : upcoming;
 
-  if (upcoming.length === 0) return null;
+  if (displayEvents.length === 0) return null;
 
   return (
     <div className="rounded-xl border border-border/30 bg-card/50 backdrop-blur-sm p-4">
       <h3 className="text-sm font-semibold text-foreground/80 mb-3">
         📅 경제 캘린더
       </h3>
+      {/* 이벤트 데이터 만료 경고 / Stale data warning */}
+      {isStale && (
+        <p className="text-[10px] text-yellow-400/70 mb-2">
+          ⚠ 경제 캘린더 데이터 업데이트가 필요합니다 (최근 이벤트 표시 중)
+        </p>
+      )}
       <div className="space-y-2">
-        {upcoming.map((ev, i) => {
+        {displayEvents.map((ev, i) => {
           const dateObj = new Date(ev.date + "T00:00:00");
           const dayStr = dateObj.toLocaleDateString("ko-KR", {
             month: "short",

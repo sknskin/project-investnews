@@ -46,10 +46,8 @@ export const FEEDS: FeedSource[] = [
   { name: "Google 정치", url: "https://news.google.com/rss/search?q=한국+정치+국회+대통령&hl=ko&gl=KR&ceid=KR:ko", category: "domestic", broad: true },
   { name: "Google 외교", url: "https://news.google.com/rss/search?q=한국+외교+안보+북한&hl=ko&gl=KR&ceid=KR:ko", category: "domestic", broad: true },
 
-  // — 국내 증권 전문
-  // — Korean stocks specialized feeds
-  { name: "한국경제 증권", url: "https://www.hankyung.com/feed/finance", category: "domestic" },
-  { name: "매일경제 증권", url: "https://www.mk.co.kr/rss/30100041/", category: "domestic" },
+  // — 국내 증권 전문 (한국경제 증권, 매일경제는 위에서 이미 등록됨)
+  // — Korean stocks specialized feeds (hankyung finance, mk already registered above)
   { name: "이데일리 증권", url: "https://www.edaily.co.kr/rss/stock.xml", category: "domestic" },
   { name: "머니투데이 증권", url: "https://rss.mt.co.kr/mt_stock.xml", category: "domestic" },
   { name: "서울경제 증권", url: "https://www.sedaily.com/Rss/Stock", category: "domestic" },
