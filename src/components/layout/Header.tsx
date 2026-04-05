@@ -46,12 +46,11 @@ export default function Header() {
     updateTime();
   }, []);
 
-  // 메뉴 이동 시 데이터 자동 갱신 — pathname 변경 감지
-  // Auto-refresh data on navigation — detect pathname change
+  // 메뉴 이동 시 시간만 갱신 — ISR(revalidate=60)이 데이터 갱신 담당
+  // Update time on navigation — ISR(revalidate=60) handles data refresh
   useEffect(() => {
-    router.refresh();
     updateTime();
-  }, [pathname, router]);
+  }, [pathname]);
 
   const handleRefresh = () => {
     setSpinning(true);

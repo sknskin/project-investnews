@@ -52,6 +52,16 @@ export default function FilterableNewsList({ items }: { items: NewsItem[] }) {
     return ["전체", ...Array.from(set).sort()];
   }, [items]);
 
+  // 소스별 건수를 미리 계산 — 매 렌더마다 filter 반복 방지
+  // Pre-calculate source counts — avoid repeated filter on each render
+  const sourceCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const item of items) {
+      counts[item.source] = (counts[item.source] || 0) + 1;
+    }
+    return counts;
+  }, [items]);
+
   const filtered = useMemo(
     () =>
       activeSource === "전체"
@@ -93,7 +103,7 @@ export default function FilterableNewsList({ items }: { items: NewsItem[] }) {
             {source}
             {source !== "전체" && (
               <span className="ml-1 text-[10px] opacity-50">
-                {items.filter((i) => i.source === source).length}
+                {sourceCounts[source]}
               </span>
             )}
           </button>
